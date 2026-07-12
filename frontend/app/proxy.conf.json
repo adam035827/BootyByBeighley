@@ -1,0 +1,12 @@
+{
+  "/api": {
+    "target": "http://localhost:5118",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/openapi": {
+    "target": "http://localhost:5118",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

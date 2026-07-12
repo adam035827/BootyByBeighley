@@ -1,0 +1,38 @@
+<div class="todo-list">
+  <header class="todo-list__header">
+    <h1 class="todo-list__title">Todo Items</h1>
+    <span class="todo-list__badge">{{ pendingItemCount() }} pending</span>
+    <a routerLink="new" class="btn btn--primary">Add Item</a>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="todo-list__error" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="todo-list__loading">Loading…</p>
+  } @else if (items().length === 0) {
+    <p class="todo-list__empty">No items yet. Add one above!</p>
+  } @else {
+    <ul class="todo-list__items">
+      @for (item of items(); track item.id) {
+        <li class="todo-list__item" [class.todo-list__item--done]="item.isCompleted">
+          <input
+            type="checkbox"
+            [checked]="item.isCompleted"
+            (change)="toggleComplete(item)"
+            [attr.aria-label]="'Mark ' + item.title + ' as ' + (item.isCompleted ? 'incomplete' : 'complete')"
+          />
+          <span class="todo-list__item-title">{{ item.title }}</span>
+          @if (item.description) {
+            <span class="todo-list__item-desc">{{ item.description }}</span>
+          }
+          <div class="todo-list__item-actions">
+            <a [routerLink]="[item.id, 'edit']" class="btn btn--secondary btn--sm">Edit</a>
+            <button class="btn btn--danger btn--sm" (click)="delete(item.id)">Delete</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

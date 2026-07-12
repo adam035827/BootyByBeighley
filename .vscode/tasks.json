@@ -1,0 +1,149 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "wait: backend",
+      "type": "shell",
+      "command": "while (-not (Get-NetTCPConnection -LocalPort 5118 -ErrorAction SilentlyContinue)) { Start-Sleep -Milliseconds 200 }",
+      "options": {
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-NoProfile", "-Command"]
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "kill: all",
+      "dependsOn": ["kill: backend", "kill: frontend"],
+      "dependsOrder": "parallel",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "group": "startup"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "kill: backend",
+      "type": "shell",
+      "command": "Get-NetTCPConnection -LocalPort 5118 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; exit 0",
+      "options": {
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-NoProfile", "-Command"]
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepare: backend",
+      "dependsOn": ["kill: backend", "build: backend", "generate: nswag client"],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "group": "startup"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build: backend",
+      "type": "shell",
+      "command": "dotnet build",
+      "options": {
+        "cwd": "${workspaceFolder}/backend/src/ModernApp.Api"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "generate: nswag client",
+      "type": "shell",
+      "command": "nswag run nswag.json",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm install: frontend",
+      "type": "shell",
+      "command": "npm install",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/app"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "kill: frontend",
+      "type": "shell",
+      "command": "Get-NetTCPConnection -LocalPort 4200 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; exit 0",
+      "options": {
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-NoProfile", "-Command"]
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "serve: frontend",
+      "type": "shell",
+      "dependsOn": ["kill: frontend", "npm install: frontend", "wait: backend"],
+      "dependsOrder": "sequence",
+      "command": "node .\\node_modules\\@angular\\cli\\bin\\ng.js serve --host 127.0.0.1",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/app"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "startup"
+      },
+      "problemMatcher": {
+        "owner": "angular",
+        "pattern": {
+          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Local:\\s+http://"
+        }
+      }
+    }
+  ]
+}

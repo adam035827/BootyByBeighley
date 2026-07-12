@@ -1,0 +1,9 @@
+// Feature routes are lazy-loaded and registered here.
+// Each feature exports its own routes array.
+//
+// Example:
+//   {
+//     path: 'items',
+//     loadChildren: () =>
+//       import('./features/items/items.routes').then(m => m.ITEMS_ROUTES)
+//   }
