@@ -1,0 +1,60 @@
+// =============================================================================
+// Theme Configuration
+// Define color themes here. Import the desired theme in styles.scss.
+// Switch themes by changing which theme file is imported.
+// =============================================================================
+
+// --- Default Theme: White & Vibrant Red ---
+// A clean, modern theme with a vibrant red accent for primary actions.
+
+:root {
+  // --- Brand colors ---
+  --theme-primary:         #ff1744;  // Vibrant Red
+  --theme-primary-dark:    #d01436;  // Darker Red
+  --theme-primary-light:   #ff5a7d;  // Lighter Red
+  --theme-secondary:       #f5f5f5;  // Light Gray
+  --theme-secondary-dark:  #e0e0e0;  // Medium Gray
+  --theme-secondary-light: #ffffff;  // White
+  
+  // --- Brand surface colors ---
+  --theme-background:      #ffffff;  // White background
+  --theme-surface:         #f5f5f5;  // Light gray surface
+  --theme-surface-variant: #eeeeee;  // Slightly darker surface
+  
+  // --- Brand accent colors ---
+  --theme-success:         #4caf50;
+  --theme-warning:         #ff9800;
+  --theme-error:           #f44336;
+  --theme-info:            #2196f3;
+  
+  // --- Text colors ---
+  --theme-text-primary:    #212121;  // Dark text on white
+  --theme-text-secondary:  #757575;  // Gray text
+  --theme-text-inverse:    #ffffff;  // White text on dark
+}
+
+// --- Example: Dark Theme (commented out for reference) ---
+// Uncomment and swap the import in styles.scss to use this theme
+/*
+:root {
+  --theme-primary:         #bb86fc;
+  --theme-primary-dark:    #9a67ea;
+  --theme-primary-light:   #d9b0ff;
+  --theme-secondary:       #03dac6;
+  --theme-secondary-dark:  #01a89a;
+  --theme-secondary-light: #b2fef7;
+  
+  --theme-background:      #121212;
+  --theme-surface:         #1e1e1e;
+  --theme-surface-variant: #2c2c2c;
+  
+  --theme-success:         #81c784;
+  --theme-warning:         #ffb74d;
+  --theme-error:           #ef5350;
+  --theme-info:            #64b5f6;
+  
+  --theme-text-primary:    #ffffff;
+  --theme-text-secondary:  #bdbdbd;
+  --theme-text-inverse:    #121212;
+}
+*/

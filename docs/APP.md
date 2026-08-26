@@ -16,16 +16,27 @@ The app will be distributed via the **Apple App Store and Google Play Store** as
 
 ## Branding
 
-> **Placeholder** — branding (logo, color palette, typography, tone of voice) has not been defined yet.
-> All visual design decisions should use placeholder tokens until the brand guide is provided.
-> See `frontend/app/src/styles/_tokens.scss` for the design token layer where brand values will land.
+### Current Theme: White & Vibrant Red
 
-| Token | Placeholder value | Notes |
+The app uses a **white background with vibrant red accents** as the primary brand colors.
+
+| Element | Color | Token |
 |---|---|---|
-| App name | Booty by Beighley | Final — use this in all copy |
-| Primary color | TBD | Replace `--color-primary` when brand is ready |
+| App name | Booty by Beighley | — |
+| Primary color | Vibrant Red `#ff1744` | `--color-primary` |
+| Background | White `#ffffff` | `--color-background` |
+| Surface | Light Gray `#f5f5f5` | `--color-surface` |
+| Text | Dark `#212121` | `--color-text-primary` |
 | Logo | TBD | Use a text wordmark as fallback |
-| Tagline | TBD | — |
+
+### Design Tokens & Theming
+
+All colors, typography, spacing, and layout are defined as **CSS custom properties** in `frontend/app/src/styles/_theme.scss` and `frontend/app/src/styles/_tokens.scss`.
+
+**To change the theme:**
+- Edit the theme variables in `_theme.scss`
+- All component colors update automatically
+- See [THEMING.md](THEMING.md) for full documentation on creating and managing themes
 
 ---
 

@@ -5,27 +5,27 @@
 // =============================================================================
 
 :root {
-  // --- Color palette ---
-  --color-primary:        #0057ff;
-  --color-primary-dark:   #0041cc;
-  --color-primary-light:  #4d8aff;
+  // --- Color palette (sourced from theme) ---
+  --color-primary:        var(--theme-primary);
+  --color-primary-dark:   var(--theme-primary-dark);
+  --color-primary-light:  var(--theme-primary-light);
 
-  --color-secondary:      #6c757d;
-  --color-secondary-dark: #494f54;
-  --color-secondary-light:#adb5bd;
+  --color-secondary:      var(--theme-secondary);
+  --color-secondary-dark: var(--theme-secondary-dark);
+  --color-secondary-light:var(--theme-secondary-light);
 
-  --color-success:        #198754;
-  --color-warning:        #ffc107;
-  --color-error:          #dc3545;
-  --color-info:           #0dcaf0;
+  --color-success:        var(--theme-success);
+  --color-warning:        var(--theme-warning);
+  --color-error:          var(--theme-error);
+  --color-info:           var(--theme-info);
 
-  --color-background:     #ffffff;
-  --color-surface:        #f8f9fa;
-  --color-border:         #dee2e6;
+  --color-background:     var(--theme-background);
+  --color-surface:        var(--theme-surface);
+  --color-border:         var(--theme-secondary-dark);
 
-  --color-text-primary:   #212529;
-  --color-text-secondary: #6c757d;
-  --color-text-inverse:   #ffffff;
+  --color-text-primary:   var(--theme-text-primary);
+  --color-text-secondary: var(--theme-text-secondary);
+  --color-text-inverse:   var(--theme-text-inverse);
 
   // --- Spacing scale (base 4px) ---
   --space-1:  0.25rem;   // 4px

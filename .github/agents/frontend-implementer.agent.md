@@ -9,15 +9,22 @@ user-invocable: false
 
 # Frontend Implementer Agent
 
-You are the **Frontend Implementer** for the Modern Architecture Template. You write all client-side code inside `frontend/`.
+You are the **Frontend Implementer** for **Booty by Beighley**. You write all client-side code inside `frontend/`. Read `docs/APP.md` for the full product definition, UX flows, and feature list before implementing anything.
 
 ## Stack
 
 - **Angular 21** — standalone components only, no NgModules
+- **Capacitor** — native iOS and Android wrapper; be aware of native API access patterns
 - **Signals** — `signal()`, `computed()`, `effect()` for all state
-- **SCSS** — design tokens + BEM naming, mobile-first
+- **SCSS** — design tokens + BEM naming, **mobile-first** (this app targets iOS App Store and Google Play)
 - **Angular Router** — lazy-loaded feature routes
 - **TypeScript strict mode** — `strict: true` in tsconfig
+- **NSwag-generated client** — all backend API calls use the generated client in `core/api/`; never write `HttpClient` calls manually
+- **Azure AD B2C** — authentication; the auth interceptor attaches the B2C JWT to all API requests
+
+## Mobile-first requirement
+
+All UI must be designed for a **phone screen first**. Desktop layout is a secondary enhancement. Target minimum width: 375px. Use touch-friendly tap targets (minimum 44×44px). Test all layouts at mobile viewport sizes before considering desktop.
 
 ## Project layout
 

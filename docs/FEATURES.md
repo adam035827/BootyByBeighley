@@ -1,7 +1,8 @@
 # Features
 
-This document catalogs the features included in the Modern Architecture Template.
+This document catalogs the features built in **Booty by Beighley**.
 Add entries here when new features are scaffolded or architectural patterns are introduced.
+For the full product definition and planned features see `docs/APP.md`.
 
 ---
 
@@ -30,20 +31,20 @@ Add entries here when new features are scaffolded or architectural patterns are 
 
 ---
 
-### Cosmos DB infrastructure base
+### PostgreSQL + EF Core infrastructure base
 - **Layer**: backend — Infrastructure
-- **Pattern**: Repository pattern over Cosmos DB SDK 3.x
-- **Description**: `CosmosDocument` base class provides consistent `Id`, `PartitionKey`, and `Type` discriminator fields for all persisted documents. `CosmosClient` is registered as a singleton via DI, configured from `Cosmos:ConnectionString` (Key Vault / environment).
+- **Pattern**: Repository pattern over EF Core with Npgsql
+- **Description**: `AppDbContext` provides the EF Core entry point for all database access. All entity configurations use Fluent API in `Infrastructure/Persistence/Configurations/`. Repository implementations live in `Infrastructure/Repositories/`. Schema is managed via EF Core migrations. The Cosmos DB infrastructure from the original template has been removed.
 - **Key files**:
-  - `src/ModernApp.Infrastructure/Persistence/CosmosDocument.cs`
+  - `src/ModernApp.Infrastructure/Persistence/AppDbContext.cs`
   - `src/ModernApp.Infrastructure/DependencyInjection.cs`
 
 ---
 
-### JWT Bearer authentication
+### Azure AD B2C authentication
 - **Layer**: backend — API
-- **Pattern**: Stateless token-based auth
-- **Description**: JWT Bearer authentication is configured in `Program.cs`. Token validation settings (issuer, audience, signing key) are injected from configuration. Endpoints are protected with `.RequireAuthorization()`.
+- **Pattern**: Stateless token-based auth via Azure AD B2C
+- **Description**: Azure AD B2C issues JWTs validated by the JWT Bearer middleware in `Program.cs`. A custom `role` claim distinguishes `Coach` from `Student`. The Coach role is a database flag — not hardcoded — so additional coaches can be granted access without code changes. Endpoints are protected with `.RequireAuthorization()` and role-based policies.
 - **Key files**:
   - `src/ModernApp.Api/Program.cs`
 

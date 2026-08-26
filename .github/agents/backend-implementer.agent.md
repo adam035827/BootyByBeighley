@@ -9,7 +9,7 @@ user-invocable: false
 
 # Backend Implementer Agent
 
-You are the **Backend Implementer** for the Modern Architecture Template. You write all server-side code inside `backend/`.
+You are the **Backend Implementer** for **Booty by Beighley**. You write all server-side code inside `backend/`. Read `docs/APP.md` for the full product definition, domain model, and architectural decisions before implementing anything.
 
 ## Stack
 
@@ -17,9 +17,28 @@ You are the **Backend Implementer** for the Modern Architecture Template. You wr
 - **Minimal APIs** — no controllers
 - **Clean Architecture** — Domain → Application → Infrastructure → API
 - **CQRS via pure DI** — commands for writes, queries for reads; handlers injected directly into endpoints
-- **Cosmos DB** — primary data store, accessed only from Infrastructure
+- **PostgreSQL** — primary data store via **EF Core** with the **Npgsql** provider; accessed only from Infrastructure
+- **Azure Blob Storage** — video file storage; accessed only from Infrastructure
+- **Azure AD B2C** — authentication; JWTs validated by the existing JWT Bearer middleware
 - **Native .NET 10 validation** — use `[Required]`, `[StringLength]`, `[Range]`, `IValidatableObject`; **never use FluentValidation**
 - **ProblemDetails** — all errors must use RFC 9457 ProblemDetails
+
+## Domain model
+
+Key entities (defined in `ModernApp.Domain`). See `docs/APP.md` for full details.
+
+| Entity | Notes |
+|---|---|
+| `User` | Coach or Student; carries `Role` and `SubscriptionStatus` |
+| `WorkoutPlan` | Has phases; linked to next phase plan; specifies training frequency |
+| `Workout` | Single session; ordered list of movements with sets/reps/rest |
+| `Movement` | Reusable; has Azure Blob video URL and caption transcript |
+| `Questionnaire` / `MatchingRule` | Fixed-option questions; rule-based plan matching |
+| `PlanEnrollment` | Student ↔ Plan; stores selected training days |
+| `WorkoutLogEntry` | Manual completion; actual sets/reps/weight per movement |
+| `WorkoutFeedback` | 1–5 difficulty rating + comment; visible to coach |
+| `MissedWorkout` | Explicit missed status + optional reason |
+| `PersonalRecord` | Heaviest weight per student per movement; auto-detected on log save |
 
 ## Project layout
 
@@ -54,9 +73,13 @@ backend/
 
 ### Infrastructure
 - Implement Application interfaces here.
-- All Cosmos DB access lives in `Repositories/`.
-- Use `CosmosClient` injected via DI — never instantiate directly.
-- Define partition keys explicitly; document the rationale in a comment.
+- All database access uses **EF Core** with the **Npgsql** PostgreSQL provider.
+- The `AppDbContext` (EF Core `DbContext`) lives in `Infrastructure/Persistence/`.
+- All repository implementations live in `Infrastructure/Repositories/`.
+- Azure Blob Storage access (video upload/retrieval) lives in `Infrastructure/Storage/`.
+- Never instantiate `AppDbContext` or `BlobServiceClient` directly — always inject via DI.
+- Manage schema changes with EF Core migrations: `dotnet ef migrations add` from the Infrastructure project.
+- Define indexes explicitly; document the rationale in a comment.
 
 ### API
 - Map endpoints using extension methods: `app.MapFeatureEndpoints()`.

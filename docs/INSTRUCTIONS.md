@@ -1,6 +1,7 @@
 # Instructions
 
-This document is the **architectural source of truth** for the Modern Architecture Template.
+This document is the **architectural source of truth** for Booty by Beighley.
+For the full product definition, features, and decisions see `docs/APP.md`.
 
 ---
 
@@ -14,20 +15,17 @@ This document is the **architectural source of truth** for the Modern Architectu
 | Node.js 22 LTS | https://nodejs.org |
 | Angular CLI 21 | `npm install -g @angular/cli` |
 | NSwag CLI | `npm install -g nswag` |
-| Azure Cosmos DB Emulator | https://aka.ms/cosmosdb-emulator |
+| PostgreSQL 16 (local) | https://www.postgresql.org/download/ or Docker |
 
 ### Secrets
 
-The backend requires `Cosmos:ConnectionString` via [.NET user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) — never committed to source control.
+The backend requires the following secrets via [.NET user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) — never committed to source control.
 
 ```powershell
 cd backend/src/ModernApp.Api
-dotnet user-secrets set "Cosmos:ConnectionString" "<connection-string>"
-```
-
-Local emulator connection string (publicly documented default key):
-```
-AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b5n6rRMQN/XqXnv9LJGEHTFYdVMPQ==
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<postgres-connection-string>"
+dotnet user-secrets set "AzureAdB2C:ClientSecret" "<b2c-client-secret>"
+dotnet user-secrets set "Azure:BlobStorage:ConnectionString" "<blob-storage-connection-string>"
 ```
 
 ### Running
@@ -59,9 +57,11 @@ The generated file is `frontend/app/src/app/core/api/api.ts`. **Do not edit it m
 | Backend API style | Minimal APIs | .NET 10 built-in |
 | Backend CQRS | Pure DI (native interfaces) | — |
 | Backend validation | .NET 10 native (`[Required]`, etc.) | — |
-| Backend persistence | Azure Cosmos DB SDK | 3.x |
-| Backend auth | JWT Bearer (`Microsoft.AspNetCore.Authentication.JwtBearer`) | 10.x |
+| Backend persistence | PostgreSQL via EF Core + Npgsql | Latest stable |
+| Backend auth | Azure AD B2C + JWT Bearer | — |
+| Backend video storage | Azure Blob Storage SDK | Latest stable |
 | Frontend framework | Angular | 21 |
+| Frontend mobile wrapper | Capacitor | Latest stable |
 | Frontend state | Angular Signals | Built-in |
 | Frontend styling | SCSS + CSS custom properties | — |
 | API client generation | NSwag | Latest |
@@ -74,12 +74,12 @@ The generated file is `frontend/app/src/app/core/api/api.ts`. **Do not edit it m
 ## Folder structure and boundaries
 
 ```
-modern-architecture-template/
+Booty-by-Beighley/
   backend/
     src/
       ModernApp.Domain/          # Entities, value objects — no external deps
       ModernApp.Application/     # CQRS handlers, DTOs, interfaces
-      ModernApp.Infrastructure/  # Cosmos DB repos, service implementations
+      ModernApp.Infrastructure/  # EF Core DbContext, PostgreSQL repos, Blob Storage
       ModernApp.Api/             # Minimal API endpoints, middleware, DI wiring
     tests/
       ModernApp.Domain.Tests/
@@ -87,16 +87,16 @@ modern-architecture-template/
       ModernApp.Infrastructure.Tests/
   frontend/
     app/src/app/
-      core/           # Interceptors, guards, services, shared models
+      core/           # Interceptors, guards, services, auth (Azure AD B2C)
       shared/         # Reusable components, pipes, directives
       features/       # One folder per domain feature (lazy-loaded)
       styles/         # SCSS design tokens, reset, typography
   infrastructure/
-    modules/          # Bicep modules (app, database, keyvault, networking)
+    modules/          # Bicep modules (app, database, storage, b2c, keyvault, networking)
     environments/     # Per-environment parameter files
     main.bicep
-  docs/               # Architecture docs (this file, FEATURES.md, AGENTS.md)
-  .github/prompts/    # Agent prompt files
+  docs/               # APP.md, INSTRUCTIONS.md, FEATURES.md, AGENTS.md
+  .github/agents/     # Agent prompt files
 ```
 
 **Rules:**

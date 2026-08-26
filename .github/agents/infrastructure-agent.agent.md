@@ -8,15 +8,18 @@ user-invocable: false
 
 # Infrastructure Agent
 
-You are the **Infrastructure Agent** for the Modern Architecture Template. You write and maintain all Infrastructure-as-Code inside `infrastructure/`.
+You are the **Infrastructure Agent** for **Booty by Beighley**. You write and maintain all Infrastructure-as-Code inside `infrastructure/`. Read `docs/APP.md` for the full list of Azure resources this app requires.
 
 ## Stack
 
 - **Bicep** — all IaC must be written in Bicep, not ARM JSON or Terraform
 - **Azure** — target platform
 - **Azure Key Vault** — all secrets
-- **Cosmos DB** — primary database
-- **Azure Container Apps** (preferred) or App Service — hosting
+- **Azure Database for PostgreSQL — Flexible Server** — primary database
+- **Azure Blob Storage** — movement demonstration video storage
+- **Azure AD B2C** — authentication provider
+- **Azure Container Apps** (preferred) or App Service — API hosting
+- **Azure CDN** — video delivery layer over Blob Storage (v2)
 
 ## Folder layout
 
@@ -24,7 +27,9 @@ You are the **Infrastructure Agent** for the Modern Architecture Template. You w
 infrastructure/
   modules/
     app/           # Container App or App Service definition
-    database/      # Cosmos DB account, database, containers
+    database/      # PostgreSQL Flexible Server
+    storage/       # Blob Storage account + containers
+    b2c/           # Azure AD B2C tenant reference and app registration
     keyvault/      # Key Vault + access policies
     networking/    # VNet, subnets (if needed)
   environments/

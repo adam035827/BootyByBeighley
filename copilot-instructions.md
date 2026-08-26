@@ -1,12 +1,12 @@
-# Copilot Instructions — Modern Architecture Template
+# Copilot Instructions — Booty by Beighley
 
-You are working inside a **generic, reusable modern architecture template**. This repo is meant to be **forked** and used as the base for multiple applications. All code, plans, and reviews must follow the rules in this file and the docs in `/docs`.
+You are working inside the **Booty by Beighley** codebase — a fitness instructing platform for a single coach and her students. The full product definition is in `docs/APP.md`. All code, plans, and reviews must follow the rules in this file and the docs in `/docs`.
 
 Your priorities, in order:
 
 1. **Obey the architecture and folder boundaries.**
 2. **Preserve Clean Architecture and CQRS.**
-3. **Keep the template generic and reusable.**
+3. **Build for the product defined in `docs/APP.md`.**
 4. **Write clear, minimal, maintainable code.**
 
 ---
@@ -42,8 +42,8 @@ Recommended layers (even if not physically separated yet):
 
 - **Domain** — core business logic, entities, value objects, domain services
 - **Application** — commands, queries, handlers, interfaces (no separate validator classes — validation is attributes on request records)
-- **Infrastructure** — Cosmos DB, external services, implementations of interfaces
-- **API** — Minimal API endpoints, request/response mapping
+- **Infrastructure** — PostgreSQL (EF Core + Npgsql), Azure Blob Storage, external service implementations
+  - **API** — Minimal API endpoints, request/response mapping
 
 ### Backend rules
 
@@ -56,23 +56,23 @@ Recommended layers (even if not physically separated yet):
   - Map to Commands/Queries by injecting `ICommandHandler<,>` or `IQueryHandler<,>` directly
   - Contain no business logic
   - Only handle HTTP concerns (status codes, mapping, ProblemDetails)
-- Use **Cosmos DB** for persistence:
-  - Repositories or data access live in Infrastructure
-  - No direct Cosmos calls from Application or API
+- Use **PostgreSQL via EF Core** for persistence:
+  - All `DbContext` access and repository implementations live in Infrastructure
+  - No direct EF Core or `DbContext` usage in Application, Domain, or API
 - Do not leak domain entities directly to API responses; use DTOs.
 
 ---
 
-## 3. Frontend architecture (Angular 21, standalone, Signals, SCSS)
+## 3. Frontend architecture (Angular 21, Capacitor, Signals, SCSS)
 
 Frontend must follow:
 
 - **Angular 21**
+- **Capacitor** — native iOS and Android wrapper
 - **Standalone components**
 - **Signals for state management**
 - **SCSS with a design system approach**
-- **Routing and feature-based structure**
-- **Mobile-first, responsive design**
+- **Mobile-first, responsive design** — phone screen is the primary target
 
 ### Frontend rules
 
@@ -94,32 +94,30 @@ Frontend must follow:
 
 ---
 
-## 4. Infrastructure (Bicep, Azure, Cosmos)
+## 4. Infrastructure (Bicep, Azure)
 
 Infrastructure must:
 
 - Use **Bicep** for Infrastructure-as-Code.
-- Target **Azure** resources (e.g., App Service / Container Apps, Cosmos DB, Storage).
-- Be modular:
-  - Separate modules for app, database, networking, etc.
-- Support multiple environments (dev/stage/prod) via parameters or separate files.
+- Target **Azure** resources (Container Apps / App Service, PostgreSQL Flexible Server, Blob Storage, AD B2C, Key Vault).
+- Be modular: separate modules for app, database, storage, auth, networking.
+- Support multiple environments (dev/stage/prod) via parameters.
 
 Do not hard-code secrets; assume they come from Key Vault or environment configuration.
 
 ---
 
-## 5. Persistence and data modeling (Cosmos DB)
+## 5. Persistence and data modeling (PostgreSQL + EF Core)
 
 When generating persistence logic:
 
-- Use **Cosmos DB** as the primary data store.
-- Design documents with:
-  - Clear partition keys
-  - Logical grouping by aggregate or usage pattern
-- Keep data access in Infrastructure.
-- Application layer depends on abstractions (`ITodoItemRepository`), not Cosmos directly.
-- All Cosmos types (`CosmosClient`, `CosmosDocument`, document classes, mapping helpers) are `internal` to `ModernApp.Infrastructure` — never reference them from Application or Domain.
-- `DependencyInjection.cs` in Infrastructure is the **only** place that touches `CosmosClient` — this is intentional so the database can be swapped by changing one file.
+- Use **PostgreSQL** via **EF Core** (Npgsql provider) as the primary data store.
+- All entities are mapped as EF Core entities with explicit relationships and indexes.
+- Manage schema changes with EF Core migrations (`dotnet ef migrations add`).
+- The `AppDbContext` lives in `ModernApp.Infrastructure/Persistence/` — never reference it from Application, Domain, or API.
+- Application layer depends only on abstractions (repository interfaces defined in Application, implemented in Infrastructure).
+- All repository implementations live in `ModernApp.Infrastructure/Repositories/`.
+- Define indexes explicitly and document their rationale in a comment.
 - Keep document classes and mapping helpers `internal` to Infrastructure so they cannot leak across the boundary.
 
 ---
