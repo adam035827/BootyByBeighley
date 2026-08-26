@@ -1,4 +1,4 @@
-using ModernApp.Api.Features.TodoItems;
+using ModernApp.Api.Features;
 using ModernApp.Application;
 using ModernApp.Infrastructure;
 
@@ -26,6 +26,10 @@ app.UseAuthorization();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
-app.MapTodoItemEndpoints();
+// Map all feature endpoints
+app.MapAuthEndpoints();
+app.MapStudentEndpoints();
+app.MapCoachEndpoints();
+app.MapProgressEndpoints();
 
 app.Run();

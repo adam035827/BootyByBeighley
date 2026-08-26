@@ -1,7 +1,7 @@
 namespace ModernApp.Application.Features.TodoItems;
 
 public record TodoItemDto(
-    string Id,
+    Guid Id,
     string Title,
     string? Description,
     bool IsCompleted,

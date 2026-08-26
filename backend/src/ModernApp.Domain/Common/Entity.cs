@@ -5,5 +5,5 @@ namespace ModernApp.Domain.Common;
 /// </summary>
 public abstract class Entity
 {
-    public string Id { get; protected set; } = Guid.NewGuid().ToString();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 }

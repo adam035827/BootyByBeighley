@@ -24,7 +24,7 @@ public class TodoItem : Entity
     /// Reconstitutes a TodoItem from persisted data. Use in repository read paths only.
     /// </summary>
     public static TodoItem Reconstitute(
-        string id,
+        Guid id,
         string title,
         string? description,
         bool isCompleted,

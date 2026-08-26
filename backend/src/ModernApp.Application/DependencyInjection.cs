@@ -1,8 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using ModernApp.Application.Common.Interfaces;
-using ModernApp.Application.Features.TodoItems;
-using ModernApp.Application.Features.TodoItems.Commands;
-using ModernApp.Application.Features.TodoItems.Queries;
+using ModernApp.Application.Features.Movements.Commands;
+using ModernApp.Application.Features.PlanEnrollment.Commands;
+using ModernApp.Application.Features.PlanEnrollment.Queries;
+using ModernApp.Application.Features.Users.Commands;
+using ModernApp.Application.Features.Users.Queries;
+using ModernApp.Application.Features.WorkoutLogging.Commands;
+using ModernApp.Application.Features.WorkoutLogging.Queries;
+using ModernApp.Application.Features.WorkoutPlans.Commands;
+using ModernApp.Application.Features.WorkoutPlans.Queries;
 
 namespace ModernApp.Application;
 
@@ -10,11 +16,35 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IQueryHandler<GetTodoItemsQuery, IReadOnlyList<TodoItemDto>>, GetTodoItemsQueryHandler>();
-        services.AddScoped<IQueryHandler<GetTodoItemQuery, TodoItemDto?>, GetTodoItemQueryHandler>();
-        services.AddScoped<ICommandHandler<CreateTodoItemCommand, TodoItemDto>, CreateTodoItemCommandHandler>();
-        services.AddScoped<ICommandHandler<UpdateTodoItemCommand, TodoItemDto?>, UpdateTodoItemCommandHandler>();
-        services.AddScoped<ICommandHandler<DeleteTodoItemCommand, bool>, DeleteTodoItemCommandHandler>();
+        // User Commands
+        services.AddScoped<ICommandHandler<RegisterStudentCommand, UserDto>, RegisterStudentCommandHandler>();
+
+        // User Queries
+        services.AddScoped<IQueryHandler<GetStudentQuery, StudentDetailsDto?>, GetStudentQueryHandler>();
+
+        // Workout Plan Commands
+        services.AddScoped<ICommandHandler<CreateWorkoutPlanCommand, WorkoutPlanDto>, CreateWorkoutPlanCommandHandler>();
+        services.AddScoped<ICommandHandler<PublishWorkoutPlanCommand, bool>, PublishWorkoutPlanCommandHandler>();
+
+        // Workout Plan Queries
+        services.AddScoped<IQueryHandler<GetWorkoutPlanQuery, WorkoutPlanDetailDto?>, GetWorkoutPlanQueryHandler>();
+
+        // Movement Commands
+        services.AddScoped<ICommandHandler<CreateMovementCommand, MovementDto>, CreateMovementCommandHandler>();
+        services.AddScoped<ICommandHandler<UploadMovementVideoCommand, MovementVideoUploadDto>, UploadMovementVideoCommandHandler>();
+
+        // Plan Enrollment Commands
+        services.AddScoped<ICommandHandler<EnrollStudentToPlanCommand, PlanEnrollmentDto>, EnrollStudentToPlanCommandHandler>();
+
+        // Plan Enrollment Queries
+        services.AddScoped<IQueryHandler<GetStudentPlansQuery, List<StudentPlanDto>>, GetStudentPlansQueryHandler>();
+
+        // Workout Logging Commands
+        services.AddScoped<ICommandHandler<LogWorkoutCompletionCommand, WorkoutLogEntryDto>, LogWorkoutCompletionCommandHandler>();
+        services.AddScoped<ICommandHandler<SubmitWorkoutFeedbackCommand, WorkoutFeedbackDto>, SubmitWorkoutFeedbackCommandHandler>();
+
+        // Workout Logging Queries
+        services.AddScoped<IQueryHandler<GetStudentProgressQuery, StudentProgressDto>, GetStudentProgressQueryHandler>();
 
         return services;
     }
