@@ -82,7 +82,11 @@ Frontend must follow:
   - `signal()` for local state
   - `computed()` for derived state
   - `effect()` only when necessary for side effects
-- Use Angular’s modern control flow (`@if`, `@for`, etc.) where appropriate.
+- Use **Angular 21 control flow syntax** in all templates:
+  - `@if()` instead of `*ngIf`
+  - `@for()` with `track` parameter instead of `*ngFor`
+  - `@switch()` instead of `*ngSwitchCase`
+  - Never use structural directives (`*ngIf`, `*ngFor`, etc.) — they are deprecated in Angular 21
 - Use **SCSS** with:
   - Design tokens (colors, spacing, typography)
   - BEM or similarly consistent naming

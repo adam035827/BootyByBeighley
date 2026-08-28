@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -21,25 +21,54 @@ interface StudentRosterItem {
   styleUrl: './students.component.scss',
 })
 export class StudentsComponent implements OnInit {
-  students: StudentRosterItem[] = [];
-  loading = true;
-  error: string | null = null;
+  students = signal<StudentRosterItem[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {
+    console.log('StudentsComponent constructor executed');
+  }
 
   ngOnInit() {
+    console.log('StudentsComponent ngOnInit() called');
     this.loadStudents();
   }
 
   private loadStudents() {
-    this.http.get<StudentRosterItem[]>('/api/v1/coach/students').subscribe({
+    console.log('loadStudents() method called');
+    const url = '/api/v1/coach/students';
+    console.log('Making HTTP GET request to:', url);
+    
+    this.http.get<StudentRosterItem[]>(url).subscribe({
       next: (data) => {
-        this.students = data;
-        this.loading = false;
+        console.log('✓ HTTP response received');
+        console.log('Response data:', data);
+        console.log('Is array?', Array.isArray(data));
+        console.log('Array length:', Array.isArray(data) ? data.length : 'N/A');
+        
+        // Update signals
+        this.students.set(data);
+        console.log('✓ Signal students.set() called with', data.length, 'items');
+        
+        this.loading.set(false);
+        console.log('✓ Signal loading.set(false) called');
+        
+        // Explicit change detection as backup
+        this.cdr.detectChanges();
+        console.log('✓ detectChanges() called');
       },
       error: (err) => {
-        this.error = 'Failed to load students: ' + (err?.message || 'Unknown error');
-        this.loading = false;
+        console.error('✗ HTTP error occurred:', err);
+        console.error('Error status:', err.status);
+        console.error('Error message:', err.message);
+        
+        this.error.set('Failed to load students: ' + (err?.message || 'Unknown error'));
+        this.loading.set(false);
+        this.cdr.detectChanges();
+        console.log('✗ Error handler completed, change detection triggered');
       },
     });
   }
