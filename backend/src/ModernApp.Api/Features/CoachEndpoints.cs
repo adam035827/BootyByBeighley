@@ -1,8 +1,10 @@
 using ModernApp.Application.Common.Interfaces;
 using ModernApp.Application.Features.Movements.Commands;
+using ModernApp.Application.Features.Movements.Queries;
 using ModernApp.Application.Features.PlanEnrollment.Commands;
 using ModernApp.Application.Features.PlanEnrollment.Queries;
 using ModernApp.Application.Features.Users.Queries;
+using ModernApp.Application.Features.WorkoutLogging.Queries;
 using ModernApp.Application.Features.WorkoutPlans.Commands;
 using ModernApp.Application.Features.WorkoutPlans.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,7 @@ public static class CoachEndpoints
     public static void MapCoachEndpoints(this WebApplication app)
     {
         MapStudentsEndpoints(app);
+        MapCoachDashboardDataEndpoints(app);
         MapWorkoutPlanEndpoints(app);
         MapMovementEndpoints(app);
         MapPlanEnrollmentEndpoints(app);
@@ -33,11 +36,65 @@ public static class CoachEndpoints
             .Produces<List<StudentRosterItemDto>>();
     }
 
+    private static void MapCoachDashboardDataEndpoints(WebApplication app)
+    {
+        var group = app.MapGroup("/api/v1/coach")
+            .WithTags("Coach Dashboard");
+            // TODO: Add role-based authorization once auth system is implemented
+            // .RequireAuthorization(policy => policy.RequireRole("Coach"));
+
+        // GET /api/v1/coach/plans
+        group.MapGet("/plans", GetWorkoutPlans)
+            .WithName("GetCoachWorkoutPlans")
+            .WithOpenApi()
+            .Produces<List<WorkoutPlanItemDto>>();
+
+        // GET /api/v1/coach/movements
+        group.MapGet("/movements", GetMovements)
+            .WithName("GetMovements")
+            .WithOpenApi()
+            .Produces<List<MovementItemDto>>();
+
+        // GET /api/v1/coach/activity
+        group.MapGet("/activity", GetRecentActivity)
+            .WithName("GetRecentActivity")
+            .WithOpenApi()
+            .Produces<List<ActivityItemDto>>();
+    }
+
     private static async Task<IResult> GetStudentsRoster(
         HttpContext http,
         [FromServices] IQueryHandler<GetStudentsForCoachQuery, List<StudentRosterItemDto>> handler)
     {
         var result = await handler.ExecuteAsync(new GetStudentsForCoachQuery(), http.RequestAborted);
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetWorkoutPlans(
+        HttpContext http,
+        [FromServices] IQueryHandler<GetWorkoutPlansForCoachQuery, List<WorkoutPlanItemDto>> handler)
+    {
+        var result = await handler.ExecuteAsync(new GetWorkoutPlansForCoachQuery(), http.RequestAborted);
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetMovements(
+        HttpContext http,
+        [FromServices] IQueryHandler<GetMovementsQuery, List<MovementItemDto>> handler)
+    {
+        var result = await handler.ExecuteAsync(new GetMovementsQuery(), http.RequestAborted);
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetRecentActivity(
+        int limitDays = 7,
+        HttpContext? http = null,
+        [FromServices] IQueryHandler<GetRecentActivityQuery, List<ActivityItemDto>>? handler = null)
+    {
+        if (handler == null || http == null)
+            return Results.BadRequest("Handler or context not available");
+
+        var result = await handler.ExecuteAsync(new GetRecentActivityQuery(limitDays), http.RequestAborted);
         return Results.Ok(result);
     }
 

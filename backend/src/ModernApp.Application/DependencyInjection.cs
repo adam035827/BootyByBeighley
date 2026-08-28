@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ModernApp.Application.Common.Interfaces;
 using ModernApp.Application.Features.Movements.Commands;
+using ModernApp.Application.Features.Movements.Queries;
 using ModernApp.Application.Features.PlanEnrollment.Commands;
 using ModernApp.Application.Features.PlanEnrollment.Queries;
 using ModernApp.Application.Features.Users.Commands;
@@ -29,10 +30,14 @@ public static class DependencyInjection
 
         // Workout Plan Queries
         services.AddScoped<IQueryHandler<GetWorkoutPlanQuery, WorkoutPlanDetailDto?>, GetWorkoutPlanQueryHandler>();
+        services.AddScoped<IQueryHandler<GetWorkoutPlansForCoachQuery, List<WorkoutPlanItemDto>>, GetWorkoutPlansForCoachQueryHandler>();
 
         // Movement Commands
         services.AddScoped<ICommandHandler<CreateMovementCommand, MovementDto>, CreateMovementCommandHandler>();
         services.AddScoped<ICommandHandler<UploadMovementVideoCommand, MovementVideoUploadDto>, UploadMovementVideoCommandHandler>();
+
+        // Movement Queries
+        services.AddScoped<IQueryHandler<GetMovementsQuery, List<MovementItemDto>>, GetMovementsQueryHandler>();
 
         // Plan Enrollment Commands
         services.AddScoped<ICommandHandler<EnrollStudentToPlanCommand, PlanEnrollmentDto>, EnrollStudentToPlanCommandHandler>();
@@ -46,6 +51,7 @@ public static class DependencyInjection
 
         // Workout Logging Queries
         services.AddScoped<IQueryHandler<GetStudentProgressQuery, StudentProgressDto>, GetStudentProgressQueryHandler>();
+        services.AddScoped<IQueryHandler<GetRecentActivityQuery, List<ActivityItemDto>>, GetRecentActivityQueryHandler>();
 
         return services;
     }

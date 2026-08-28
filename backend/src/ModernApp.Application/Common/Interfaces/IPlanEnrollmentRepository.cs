@@ -10,4 +10,5 @@ public interface IPlanEnrollmentRepository
     Task<PlanEnrollment?> GetByIdAsync(Guid id, CancellationToken ct);
     Task<List<PlanEnrollment>> GetByStudentIdAsync(Guid studentId, CancellationToken ct);
     Task<PlanEnrollment?> GetByStudentAndPlanAsync(Guid studentId, Guid planId, CancellationToken ct);
+    Task<int> GetEnrolledCountByPlanAsync(Guid planId, CancellationToken ct);
 }

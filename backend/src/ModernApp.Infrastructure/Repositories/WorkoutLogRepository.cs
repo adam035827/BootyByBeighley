@@ -64,4 +64,13 @@ internal sealed class WorkoutLogRepository(AppDbContext context) : IWorkoutLogRe
             .OrderByDescending(e => e.CompletedAt)
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<List<WorkoutLogEntry>> GetRecentCompletedLogsAsync(DateTime since, CancellationToken ct)
+    {
+        return await context.WorkoutLogEntries
+            .Where(e => e.Status == WorkoutStatus.Completed && e.CompletedAt >= since)
+            .Include(e => e.LoggedSets)
+            .OrderByDescending(e => e.CompletedAt)
+            .ToListAsync(ct);
+    }
 }

@@ -46,4 +46,11 @@ internal sealed class PlanEnrollmentRepository(AppDbContext context) : IPlanEnro
         return await context.PlanEnrollments
             .FirstOrDefaultAsync(e => e.UserId == studentId && e.WorkoutPlanId == planId, ct);
     }
+
+    public async Task<int> GetEnrolledCountByPlanAsync(Guid planId, CancellationToken ct)
+    {
+        return await context.PlanEnrollments
+            .Where(e => e.WorkoutPlanId == planId)
+            .CountAsync(ct);
+    }
 }
