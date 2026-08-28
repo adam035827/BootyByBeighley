@@ -22,8 +22,9 @@ public static class CoachEndpoints
     private static void MapStudentsEndpoints(WebApplication app)
     {
         var group = app.MapGroup("/api/v1/coach/students")
-            .WithTags("Students")
-            .RequireAuthorization(policy => policy.RequireRole("Coach"));
+            .WithTags("Students");
+            // TODO: Add role-based authorization once auth system is implemented
+            // .RequireAuthorization(policy => policy.RequireRole("Coach"));
 
         // GET /api/v1/coach/students
         group.MapGet("/", GetStudentsRoster)
