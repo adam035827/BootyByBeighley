@@ -11,6 +11,9 @@ public class WorkoutMovement : Entity
     public int PrescribedReps { get; private set; }
     public int? PrescribedRestSeconds { get; private set; }
 
+    // Navigation property
+    public Workout? Workout { get; set; }
+
     private WorkoutMovement() { }
 
     public static WorkoutMovement Create(

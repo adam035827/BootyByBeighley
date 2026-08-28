@@ -50,8 +50,8 @@ internal sealed class WorkoutLogEntryConfiguration : IEntityTypeConfiguration<Wo
             .OnDelete(DeleteBehavior.Cascade);
 
         // Navigation property
-        builder.HasMany<WorkoutLogSetEntry>()
-            .WithOne()
+        builder.HasMany(wle => wle.LoggedSets)
+            .WithOne(wlse => wlse.WorkoutLogEntry)
             .HasForeignKey(wlse => wlse.WorkoutLogEntryId)
             .OnDelete(DeleteBehavior.Cascade);
 

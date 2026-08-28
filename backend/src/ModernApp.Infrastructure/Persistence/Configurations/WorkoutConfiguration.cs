@@ -24,8 +24,8 @@ internal sealed class WorkoutConfiguration : IEntityTypeConfiguration<Workout>
             .IsRequired();
 
         // Relationship: Workout -> WorkoutMovements
-        builder.HasMany<WorkoutMovement>()
-            .WithOne()
+        builder.HasMany(w => w.Movements)
+            .WithOne(wm => wm.Workout)
             .HasForeignKey(wm => wm.WorkoutId)
             .OnDelete(DeleteBehavior.Cascade);
 

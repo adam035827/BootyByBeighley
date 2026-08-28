@@ -25,6 +25,8 @@ internal sealed class WorkoutMovementConfiguration : IEntityTypeConfiguration<Wo
         builder.Property(wm => wm.PrescribedReps)
             .IsRequired();
 
+        // Note: Workout relationship is configured in WorkoutConfiguration
+        
         // Foreign key to Movement
         builder.HasOne<Domain.Movements.Movement>()
             .WithMany()

@@ -32,7 +32,7 @@ internal sealed class WorkoutPlanConfiguration : IEntityTypeConfiguration<Workou
             .OnDelete(DeleteBehavior.Restrict);
 
         // Relationship: WorkoutPlan -> Workouts
-        builder.HasMany<Workout>()
+        builder.HasMany(wp => wp.Workouts)
             .WithOne()
             .HasForeignKey(w => w.WorkoutPlanId)
             .OnDelete(DeleteBehavior.Cascade);

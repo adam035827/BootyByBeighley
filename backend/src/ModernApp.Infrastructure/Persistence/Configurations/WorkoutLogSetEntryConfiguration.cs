@@ -34,6 +34,8 @@ internal sealed class WorkoutLogSetEntryConfiguration : IEntityTypeConfiguration
             .HasForeignKey(wlse => wlse.WorkoutMovementId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Note: WorkoutLogEntry relationship is configured in WorkoutLogEntryConfiguration
+
         // Indexes
         builder.HasIndex(wlse => wlse.WorkoutLogEntryId);
         builder.HasIndex(wlse => wlse.WorkoutMovementId);

@@ -24,7 +24,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException("DefaultConnection not configured");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString, b => b.MigrationsAssembly("ModernApp.Infrastructure")));
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();

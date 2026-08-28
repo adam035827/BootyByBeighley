@@ -12,6 +12,9 @@ public class WorkoutLogSetEntry : Entity
     public int? DurationSeconds { get; private set; }
     public string? NotesPerMovement { get; private set; }
 
+    // Navigation property
+    public WorkoutLogEntry? WorkoutLogEntry { get; set; }
+
     private WorkoutLogSetEntry() { }
 
     public static WorkoutLogSetEntry Create(
