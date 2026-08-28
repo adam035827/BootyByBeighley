@@ -5,6 +5,7 @@ using ModernApp.Application.Features.PlanEnrollment.Queries;
 using ModernApp.Application.Features.Users.Queries;
 using ModernApp.Application.Features.WorkoutPlans.Commands;
 using ModernApp.Application.Features.WorkoutPlans.Queries;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ModernApp.Api.Features;
 
@@ -32,8 +33,8 @@ public static class CoachEndpoints
     }
 
     private static async Task<IResult> GetStudentsRoster(
-        IQueryHandler<GetStudentsForCoachQuery, List<StudentRosterItemDto>> handler,
-        HttpContext http)
+        HttpContext http,
+        [FromServices] IQueryHandler<GetStudentsForCoachQuery, List<StudentRosterItemDto>> handler)
     {
         var result = await handler.ExecuteAsync(new GetStudentsForCoachQuery(), http.RequestAborted);
         return Results.Ok(result);
