@@ -1,0 +1,34 @@
+<div class="coach-shell">
+  <div class="coach-shell__tabs">
+    <nav class="coach-shell__nav">
+      <a
+        routerLink="students"
+        routerLinkActive="active"
+        class="coach-shell__tab"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        Students
+      </a>
+      <a
+        routerLink="content"
+        routerLinkActive="active"
+        class="coach-shell__tab"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        Content
+      </a>
+      <a
+        routerLink="activity"
+        routerLinkActive="active"
+        class="coach-shell__tab"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >
+        Activity
+      </a>
+    </nav>
+  </div>
+
+  <div class="coach-shell__content">
+    <router-outlet />
+  </div>
+</div>
