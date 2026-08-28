@@ -4,33 +4,33 @@
 // Switch themes by changing which theme file is imported.
 // =============================================================================
 
-// --- Default Theme: White & Vibrant Red ---
-// A clean, modern theme with a vibrant red accent for primary actions.
+// --- Booty By Beighley Theme ---
+// Brand colors inspired by zodiac/astrology vibes: sage green, mauve pink, and golden yellow
 
 :root {
   // --- Brand colors ---
-  --theme-primary:         #ff1744;  // Vibrant Red
-  --theme-primary-dark:    #d01436;  // Darker Red
-  --theme-primary-light:   #ff5a7d;  // Lighter Red
-  --theme-secondary:       #f5f5f5;  // Light Gray
-  --theme-secondary-dark:  #e0e0e0;  // Medium Gray
-  --theme-secondary-light: #ffffff;  // White
+  --theme-primary:         #D798A8;  // Mauve Rose Pink - primary headings
+  --theme-primary-dark:    #B87090;  // Darker mauve
+  --theme-primary-light:   #E5B5C8;  // Lighter mauve
+  --theme-secondary:       #8B8B4F;  // Sage Green - backgrounds
+  --theme-secondary-dark:  #6F6F3F;  // Darker sage
+  --theme-secondary-light: #ABABAF;  // Lighter sage
   
   // --- Brand surface colors ---
-  --theme-background:      #ffffff;  // White background
-  --theme-surface:         #f5f5f5;  // Light gray surface
-  --theme-surface-variant: #eeeeee;  // Slightly darker surface
+  --theme-background:      #8B8B4F;  // Sage green background
+  --theme-surface:         #ABABAF;  // Light sage surface
+  --theme-surface-variant: #999984;  // Slightly darker surface
   
   // --- Brand accent colors ---
-  --theme-success:         #4caf50;
-  --theme-warning:         #ff9800;
-  --theme-error:           #f44336;
-  --theme-info:            #2196f3;
+  --theme-success:         #F4E34D;  // Golden Yellow - accents/highlights
+  --theme-warning:         #FF9800;
+  --theme-error:           #D45757;  // Muted red
+  --theme-info:            #D798A8;
   
   // --- Text colors ---
-  --theme-text-primary:    #212121;  // Dark text on white
-  --theme-text-secondary:  #757575;  // Gray text
-  --theme-text-inverse:    #ffffff;  // White text on dark
+  --theme-text-primary:    #2D2D2D;  // Dark text
+  --theme-text-secondary:  #666666;  // Gray text
+  --theme-text-inverse:    #FFFAF0;  // Cream on dark backgrounds
 }
 
 // --- Example: Dark Theme (commented out for reference) ---

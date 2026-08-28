@@ -1,12 +1,16 @@
 // =============================================================================
 // Typography
 // Base heading and body type styles using design tokens.
+// Primary font (Kabel) for headings, secondary (Hibernate) for body text.
 // =============================================================================
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
-  color: var(--color-text-primary);
+  color: var(--theme-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 h1 { font-size: var(--font-size-4xl); }
@@ -17,6 +21,7 @@ h5 { font-size: var(--font-size-lg); }
 h6 { font-size: var(--font-size-base); }
 
 p {
+  font-family: var(--font-family-secondary);
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
 }

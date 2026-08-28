@@ -20,32 +20,40 @@ styles.scss
 
 ---
 
-## Current Theme: White & Vibrant Red
+## Current Theme: Booty By Beighley Zodiac Branding
 
-The default theme features:
-- **Background**: Pure white (`#ffffff`)
-- **Primary Color**: Vibrant red (`#ff1744`)
-- **Surface**: Light gray (`#f5f5f5`)
-- **Text**: Dark text on light backgrounds
+The active theme features the official Booty By Beighley branding:
+- **Background**: Sage green (`#8B8B4F`)
+- **Primary Color**: Mauve rose pink (`#D798A8`) - used for headings and primary actions
+- **Accent Color**: Golden yellow (`#F4E34D`) - success, highlights, and emphasis
+- **Text**: Dark text on light backgrounds, cream/off-white on dark backgrounds
 
 ### Theme Variables
 
 All theme colors are defined in `frontend/app/src/styles/_theme.scss`:
 
 ```scss
---theme-primary:         #ff1744;  // Vibrant Red
---theme-primary-dark:    #d01436;  // Darker Red
---theme-primary-light:   #ff5a7d;  // Lighter Red
---theme-secondary:       #f5f5f5;  // Light Gray
---theme-background:      #ffffff;  // White
---theme-success:         #4caf50;
---theme-warning:         #ff9800;
---theme-error:           #f44336;
---theme-info:            #2196f3;
---theme-text-primary:    #212121;
---theme-text-secondary:  #757575;
---theme-text-inverse:    #ffffff;
+--theme-primary:         #D798A8;  // Mauve Rose Pink - primary headings
+--theme-primary-dark:    #B87090;  // Darker mauve
+--theme-primary-light:   #E5B5C8;  // Lighter mauve
+--theme-secondary:       #8B8B4F;  // Sage Green - backgrounds
+--theme-secondary-dark:  #6F6F3F;  // Darker sage
+--theme-secondary-light: #ABABAF;  // Lighter sage
+--theme-background:      #8B8B4F;  // Sage green background
+--theme-surface:         #ABABAF;  // Light sage surface
+--theme-success:         #F4E34D;  // Golden Yellow - accents
+--theme-error:           #D45757;  // Muted red
+--theme-text-primary:    #2D2D2D;  // Dark text
+--theme-text-secondary:  #666666;  // Gray text
+--theme-text-inverse:    #FFFAF0;  // Cream on dark
 ```
+
+### Typography
+
+The theme uses two custom fonts:
+- **Primary (Kabel)**: Used for all headings (h1-h6) with uppercase text transform
+- **Secondary (Hibernate)**: Used for body text, paragraphs, and descriptive copy
+- **Fallback**: System fonts if custom fonts are not loaded
 
 ---
 
@@ -290,6 +298,71 @@ export function setTheme(themeName: 'light' | 'dark') {
 
 ---
 
+## Setting Up Custom Fonts
+
+The app is configured to use custom fonts:
+- **Kabel** — Primary font for headings (h1-h6)
+- **Hibernate** — Secondary font for body text and paragraphs
+
+### Adding Font Files
+
+1. **Create fonts directory:**
+   ```
+   frontend/app/src/assets/fonts/
+   ├── kabel/
+   │   ├── kabel-regular.woff2
+   │   ├── kabel-bold.woff2
+   │   └── kabel-italic.woff2
+   └── hibernate/
+       ├── hibernate-regular.woff2
+       └── hibernate-italic.woff2
+   ```
+
+2. **Add @font-face declarations to `_typography.scss`:**
+   ```scss
+   @font-face {
+     font-family: 'Kabel';
+     src: url('/assets/fonts/kabel/kabel-regular.woff2') format('woff2');
+     font-weight: 400;
+     font-display: swap;
+   }
+
+   @font-face {
+     font-family: 'Kabel';
+     src: url('/assets/fonts/kabel/kabel-bold.woff2') format('woff2');
+     font-weight: 700;
+     font-display: swap;
+   }
+
+   @font-face {
+     font-family: 'Hibernate';
+     src: url('/assets/fonts/hibernate/hibernate-regular.woff2') format('woff2');
+     font-weight: 400;
+     font-display: swap;
+   }
+   ```
+
+3. **Or use Google Fonts (if available):**
+   Update `frontend/app/src/index.html`:
+   ```html
+   <link href="https://fonts.googleapis.com/css2?family=Kabel&family=Hibernate&display=swap" rel="stylesheet">
+   ```
+
+### Font Variables
+
+All fonts are defined as CSS custom properties in `_tokens.scss`:
+
+```scss
+--font-family-primary:   'Kabel', 'Segoe UI', sans-serif;
+--font-family-secondary: 'Hibernate', 'Georgia', serif;
+--font-family-base:      'Kabel', system-ui, -apple-system, sans-serif;
+--font-family-mono:      'Fira Code', 'Cascadia Code', monospace;
+```
+
+**Note:** Fallback fonts are included to ensure text displays correctly even if custom fonts fail to load.
+
+---
+
 ## Best Practices
 
 1. **Always use tokens** — never hardcode colors in components
@@ -301,10 +374,19 @@ export function setTheme(themeName: 'light' | 'dark') {
 
 ---
 
-## Future: Dynamic Theming
+## Current Branding Status
 
-When Booty by Beighley's full brand identity is defined, you can:
-- Add multiple theme files (e.g., `_theme-light.scss`, `_theme-dark.scss`)
-- Implement a theme switcher component
-- Store user theme preference in the backend
-- Update this guide with new brand colors and guidelines
+✅ **Colors:** Updated to match Booty By Beighley official branding
+- Sage green backgrounds, mauve pink headings, golden yellow accents
+
+⏳ **Fonts:** Configuration ready, awaiting font files
+- Kabel (primary) and Hibernate (secondary) are set up in tokens
+- Fallback fonts will display text if custom fonts are not yet available
+- Add font files to `src/assets/fonts/` or link via CDN when ready
+
+🎯 **Next Steps:**
+1. Obtain Kabel and Hibernate font files (or find Google Fonts equivalents)
+2. Place files in `frontend/app/src/assets/fonts/`
+3. Update `_typography.scss` with @font-face declarations
+4. Test on all platforms to ensure fonts load correctly
+5. Verify contrast ratios meet WCAG AA accessibility standards

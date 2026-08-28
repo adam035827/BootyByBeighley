@@ -40,8 +40,10 @@
   --space-16: 4rem;      // 64px
 
   // --- Typography ---
-  --font-family-base:  'Inter', system-ui, -apple-system, sans-serif;
-  --font-family-mono:  'Fira Code', 'Cascadia Code', monospace;
+  --font-family-primary:   'Kabel', 'Segoe UI', sans-serif;      // Primary headings
+  --font-family-secondary: 'Hibernate', 'Georgia', serif;         // Secondary text
+  --font-family-base:      'Kabel', system-ui, -apple-system, sans-serif;  // Body text
+  --font-family-mono:      'Fira Code', 'Cascadia Code', monospace;
 
   --font-size-xs:   0.75rem;   // 12px
   --font-size-sm:   0.875rem;  // 14px
