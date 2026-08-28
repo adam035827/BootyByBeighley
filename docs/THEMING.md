@@ -379,14 +379,19 @@ All fonts are defined as CSS custom properties in `_tokens.scss`:
 ✅ **Colors:** Updated to match Booty By Beighley official branding
 - Sage green backgrounds, mauve pink headings, golden yellow accents
 
-⏳ **Fonts:** Configuration ready, awaiting font files
-- Kabel (primary) and Hibernate (secondary) are set up in tokens
-- Fallback fonts will display text if custom fonts are not yet available
-- Add font files to `src/assets/fonts/` or link via CDN when ready
+✅ **Kabel Font:** Custom font loaded and active
+- Multiple weights available: Light (300), Book/Regular (400), Bold (700), Heavy (900)
+- Applied to all headings (h1-h6) with uppercase text transform
+- Located in: `frontend/app/src/assets/fonts/Kabel-*.woff2`
+
+⏳ **Hibernate Font:** Configuration ready, awaiting font files
+- Fallback to Georgia serif in the meantime
+- Add font file to `src/assets/fonts/` when available
+- Update @font-face in `_typography.scss` when ready
 
 🎯 **Next Steps:**
-1. Obtain Kabel and Hibernate font files (or find Google Fonts equivalents)
-2. Place files in `frontend/app/src/assets/fonts/`
-3. Update `_typography.scss` with @font-face declarations
+1. Obtain Hibernate font file (or find serif font equivalent)
+2. Place file in `frontend/app/src/assets/fonts/`
+3. Add @font-face declaration to `_typography.scss`
 4. Test on all platforms to ensure fonts load correctly
 5. Verify contrast ratios meet WCAG AA accessibility standards
