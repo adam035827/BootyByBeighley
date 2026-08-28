@@ -5,6 +5,42 @@
   </div>
 
   <div class="students__content">
-    <p class="students__placeholder">Students list coming soon...</p>
+    <div *ngIf="loading" class="students__loading">
+      <p>Loading students...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="students__error">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!loading && !error && students.length === 0" class="students__empty">
+      <p>No students enrolled yet.</p>
+    </div>
+
+    <div *ngIf="!loading && !error && students.length > 0" class="students__list">
+      <div *ngFor="let student of students" class="student-card">
+        <div class="student-card__header">
+          <div class="student-card__name">
+            <h3 class="student-card__title">{{ student.firstName }} {{ student.lastName }}</h3>
+            <p class="student-card__email">{{ student.email }}</p>
+          </div>
+          <div class="student-card__status">
+            <span *ngIf="student.hasPendingFeedback" class="badge badge--feedback">📝 Feedback</span>
+            <span *ngIf="student.hasUnreadPrs" class="badge badge--pr">🏆 New PR</span>
+          </div>
+        </div>
+
+        <div class="student-card__stats">
+          <div class="stat">
+            <span class="stat__label">Active Plans:</span>
+            <span class="stat__value">{{ student.activePlanCount }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat__label">Last Workout:</span>
+            <span class="stat__value">{{ getLastWorkoutDisplay(student.lastWorkoutDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

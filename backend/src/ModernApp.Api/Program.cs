@@ -1,6 +1,9 @@
 using ModernApp.Api.Features;
 using ModernApp.Application;
 using ModernApp.Infrastructure;
+using ModernApp.Infrastructure.Persistence;
+using ModernApp.Infrastructure.Seeding;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +18,16 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+// Apply migrations and seed data in development
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync();
+        await SeedData.SeedAsync(context);
+    }
+
     app.MapOpenApi();
 }
 

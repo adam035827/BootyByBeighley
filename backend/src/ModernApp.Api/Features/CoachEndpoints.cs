@@ -2,6 +2,7 @@ using ModernApp.Application.Common.Interfaces;
 using ModernApp.Application.Features.Movements.Commands;
 using ModernApp.Application.Features.PlanEnrollment.Commands;
 using ModernApp.Application.Features.PlanEnrollment.Queries;
+using ModernApp.Application.Features.Users.Queries;
 using ModernApp.Application.Features.WorkoutPlans.Commands;
 using ModernApp.Application.Features.WorkoutPlans.Queries;
 
@@ -11,9 +12,31 @@ public static class CoachEndpoints
 {
     public static void MapCoachEndpoints(this WebApplication app)
     {
+        MapStudentsEndpoints(app);
         MapWorkoutPlanEndpoints(app);
         MapMovementEndpoints(app);
         MapPlanEnrollmentEndpoints(app);
+    }
+
+    private static void MapStudentsEndpoints(WebApplication app)
+    {
+        var group = app.MapGroup("/api/v1/coach/students")
+            .WithTags("Students")
+            .RequireAuthorization(policy => policy.RequireRole("Coach"));
+
+        // GET /api/v1/coach/students
+        group.MapGet("/", GetStudentsRoster)
+            .WithName("GetStudentsRoster")
+            .WithOpenApi()
+            .Produces<List<StudentRosterItemDto>>();
+    }
+
+    private static async Task<IResult> GetStudentsRoster(
+        IQueryHandler<GetStudentsForCoachQuery, List<StudentRosterItemDto>> handler,
+        HttpContext http)
+    {
+        var result = await handler.ExecuteAsync(new GetStudentsForCoachQuery(), http.RequestAborted);
+        return Results.Ok(result);
     }
 
     private static void MapWorkoutPlanEndpoints(WebApplication app)

@@ -56,4 +56,12 @@ internal sealed class WorkoutLogRepository(AppDbContext context) : IWorkoutLogRe
         return await context.WorkoutLogEntries
             .CountAsync(e => e.UserId == studentId && e.Status == WorkoutStatus.Missed, ct);
     }
+
+    public async Task<WorkoutLogEntry?> GetLastLogForStudentAsync(Guid studentId, CancellationToken ct)
+    {
+        return await context.WorkoutLogEntries
+            .Where(e => e.UserId == studentId)
+            .OrderByDescending(e => e.CompletedAt)
+            .FirstOrDefaultAsync(ct);
+    }
 }

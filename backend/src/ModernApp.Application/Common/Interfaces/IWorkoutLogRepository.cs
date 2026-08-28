@@ -11,4 +11,5 @@ public interface IWorkoutLogRepository
     Task<List<WorkoutLogEntry>> GetByStudentIdAsync(Guid studentId, CancellationToken ct);
     Task<int> CountCompletedByStudentAsync(Guid studentId, CancellationToken ct);
     Task<int> CountMissedByStudentAsync(Guid studentId, CancellationToken ct);
+    Task<WorkoutLogEntry?> GetLastLogForStudentAsync(Guid studentId, CancellationToken ct);
 }
