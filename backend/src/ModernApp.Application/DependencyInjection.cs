@@ -21,6 +21,7 @@ public static class DependencyInjection
 
         // User Queries
         services.AddScoped<IQueryHandler<GetStudentQuery, StudentDetailsDto?>, GetStudentQueryHandler>();
+        services.AddScoped<IQueryHandler<GetStudentsForCoachQuery, List<StudentRosterItemDto>>, GetStudentsForCoachQueryHandler>();
 
         // Workout Plan Commands
         services.AddScoped<ICommandHandler<CreateWorkoutPlanCommand, WorkoutPlanDto>, CreateWorkoutPlanCommandHandler>();
