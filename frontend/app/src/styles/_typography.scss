@@ -45,11 +45,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);
   font-weight: 900; // Use heavy weight for bold impact
   line-height: var(--line-height-tight);
-  color: var(--theme-primary); // Pink text
+  color: #E5B5C8; // Brighter pink text
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  // Add red/burgundy outline stroke effect
-  -webkit-text-stroke: 1.5px #8B4455;
+  // Add thick red/burgundy outline stroke effect
+  -webkit-text-stroke: 2.5px #C13B4D;
+  paint-order: stroke fill;
 }
 
 h1 { font-size: var(--font-size-4xl); }
