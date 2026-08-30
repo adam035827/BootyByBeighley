@@ -20,7 +20,6 @@
   margin: 0 0 var(--space-2) 0;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
 
   @media (min-width: 768px) {
     font-size: var(--font-size-3xl);
@@ -114,7 +113,6 @@
   margin: 0 0 var(--space-1) 0;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
   word-break: break-word;
 }
 
