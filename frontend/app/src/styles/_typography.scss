@@ -43,11 +43,18 @@
 // --- Heading Styles ---
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-bold);
+  font-weight: 900; // Use heavy weight for bold impact
   line-height: var(--line-height-tight);
   color: var(--theme-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  // Add burgundy/maroon outline stroke effect
+  -webkit-text-stroke: 2px #8B4455;
+  text-shadow: 
+    -1px -1px 0 #8B4455,
+    1px -1px 0 #8B4455,
+    -1px 1px 0 #8B4455,
+    1px 1px 0 #8B4455;
 }
 
 h1 { font-size: var(--font-size-4xl); }
@@ -61,6 +68,16 @@ p {
   font-family: var(--font-family-secondary);
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
+}
+
+// Subtitle/caption text in yellow
+p.subtitle,
+.subtitle {
+  color: var(--theme-success);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--font-size-sm);
 }
 
 small {
