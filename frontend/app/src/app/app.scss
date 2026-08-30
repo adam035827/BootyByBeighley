@@ -53,6 +53,7 @@
       &.active {
         color: var(--color-primary);
         font-weight: var(--font-weight-semibold);
+        -webkit-text-stroke: 1.5px #8B3A3A;
       }
     }
   }
