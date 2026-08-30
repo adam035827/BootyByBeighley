@@ -80,14 +80,14 @@
 
 .student-card {
   padding: var(--space-4);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
+  background: var(--theme-success); // Yellow background
+  border: 2px solid #000; // Black outline
+  box-shadow: 0 0 0 4px #FFF, var(--shadow-sm); // White outer outline
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
 
   &:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 0 0 4px #FFF, var(--shadow-md);
     border-color: var(--color-primary);
   }
 
