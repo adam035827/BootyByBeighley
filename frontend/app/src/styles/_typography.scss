@@ -33,6 +33,13 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Hibernate';
+  src: url('../assets/fonts/Hibernate.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 // --- Heading Styles ---
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);
