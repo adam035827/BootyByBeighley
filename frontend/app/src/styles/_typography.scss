@@ -49,15 +49,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   // Add maroon outline stroke to match inspiration
-  text-shadow: 
-    -2px -2px 0 #8B3A3A,
-    2px -2px 0 #8B3A3A,
-    -2px 2px 0 #8B3A3A,
-    2px 2px 0 #8B3A3A,
-    -1px 0 0 #8B3A3A,
-    1px 0 0 #8B3A3A,
-    0 -1px 0 #8B3A3A,
-    0 1px 0 #8B3A3A;
+  -webkit-text-stroke: 1.5px #8B3A3A;
 }
 
 h1 { font-size: var(--font-size-4xl); }
