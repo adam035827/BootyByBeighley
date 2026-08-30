@@ -45,11 +45,9 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);
   font-weight: 900; // Use heavy weight for bold impact
   line-height: var(--line-height-tight);
-  color: var(--theme-primary); // Original pink text
+  color: #FF1B6D; // Bright hot pink/magenta for headings
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  // Add maroon outline stroke
-  -webkit-text-stroke: 2px #704050;
 }
 
 h1 { font-size: var(--font-size-4xl); }
