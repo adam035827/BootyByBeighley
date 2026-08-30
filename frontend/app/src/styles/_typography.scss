@@ -48,6 +48,12 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--theme-primary); // Mauve pink (matches navbar)
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  // Add maroon outline stroke to match inspiration
+  text-shadow: 
+    -1px -1px 0 #704050,
+    1px -1px 0 #704050,
+    -1px 1px 0 #704050,
+    1px 1px 0 #704050;
 }
 
 h1 { font-size: var(--font-size-4xl); }
