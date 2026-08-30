@@ -45,12 +45,15 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-primary);
   font-weight: 900; // Use heavy weight for bold impact
   line-height: var(--line-height-tight);
-  color: #FF1493; // Hot pink/magenta text
+  color: var(--theme-primary); // Pink text
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  // Add red outline effect using drop-shadow filter
-  filter: drop-shadow(-2px 0 0 #D32F2F) drop-shadow(2px 0 0 #D32F2F) 
-          drop-shadow(0 -2px 0 #D32F2F) drop-shadow(0 2px 0 #D32F2F);
+  // Add subtle red outline using text-shadow
+  text-shadow: 
+    -1px -1px 0 #C41E3A,
+    1px -1px 0 #C41E3A,
+    -1px 1px 0 #C41E3A,
+    1px 1px 0 #C41E3A;
 }
 
 h1 { font-size: var(--font-size-4xl); }
