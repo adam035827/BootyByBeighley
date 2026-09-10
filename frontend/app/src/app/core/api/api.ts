@@ -18,71 +18,21 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 @Injectable({
     providedIn: 'root'
 })
-export class TodoItemsClient {
+export class AuthClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    /**
-     * @return OK
-     */
-    getTodoItems(): Observable<TodoItemDto[]> {
-        let url_ = this.baseUrl + "/api/todo-items";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetTodoItems(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetTodoItems(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<TodoItemDto[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<TodoItemDto[]>;
-        }));
-    }
-
-    protected processGetTodoItems(response: HttpResponseBase): Observable<TodoItemDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TodoItemDto[];
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
     }
 
     /**
      * @return Created
      */
-    createTodoItem(body: CreateTodoItemCommand): Observable<TodoItemDto> {
-        let url_ = this.baseUrl + "/api/todo-items";
+    registerStudent(body: RegisterStudentCommand): Observable<UserDto> {
+        let url_ = this.baseUrl + "/api/v1/auth/register";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -98,20 +48,20 @@ export class TodoItemsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateTodoItem(response_);
+            return this.processRegisterStudent(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateTodoItem(response_ as any);
+                    return this.processRegisterStudent(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TodoItemDto>;
+                    return _observableThrow(e) as any as Observable<UserDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TodoItemDto>;
+                return _observableThrow(response_) as any as Observable<UserDto>;
         }));
     }
 
-    protected processCreateTodoItem(response: HttpResponseBase): Observable<TodoItemDto> {
+    protected processRegisterStudent(response: HttpResponseBase): Observable<UserDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -121,13 +71,13 @@ export class TodoItemsClient {
         if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result201: any = null;
-            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TodoItemDto;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as UserDto;
             return _observableOf(result201);
             }));
         } else if (status === 400) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result400: any = null;
-            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as HttpValidationProblemDetails;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
             return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -141,11 +91,8 @@ export class TodoItemsClient {
     /**
      * @return OK
      */
-    getTodoItem(id: string): Observable<TodoItemDto> {
-        let url_ = this.baseUrl + "/api/todo-items/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    getCurrentStudent(): Observable<StudentDetailsDto> {
+        let url_ = this.baseUrl + "/api/v1/auth/me";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -157,20 +104,20 @@ export class TodoItemsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetTodoItem(response_);
+            return this.processGetCurrentStudent(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetTodoItem(response_ as any);
+                    return this.processGetCurrentStudent(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TodoItemDto>;
+                    return _observableThrow(e) as any as Observable<StudentDetailsDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TodoItemDto>;
+                return _observableThrow(response_) as any as Observable<StudentDetailsDto>;
         }));
     }
 
-    protected processGetTodoItem(response: HttpResponseBase): Observable<TodoItemDto> {
+    protected processGetCurrentStudent(response: HttpResponseBase): Observable<StudentDetailsDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -180,7 +127,7 @@ export class TodoItemsClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TodoItemDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentDetailsDto;
             return _observableOf(result200);
             }));
         } else if (status === 404) {
@@ -196,15 +143,382 @@ export class TodoItemsClient {
         }
         return _observableOf(null as any);
     }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StudentClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
 
     /**
      * @return OK
      */
-    updateTodoItem(id: string, body: UpdateTodoItemRequest): Observable<TodoItemDto> {
-        let url_ = this.baseUrl + "/api/todo-items/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    getMyPlans(): Observable<StudentPlanDto[]> {
+        let url_ = this.baseUrl + "/api/v1/my/plans";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMyPlans(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMyPlans(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StudentPlanDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StudentPlanDto[]>;
+        }));
+    }
+
+    protected processGetMyPlans(response: HttpResponseBase): Observable<StudentPlanDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentPlanDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getStudentDetails(studentId: string): Observable<StudentDetailsDto> {
+        let url_ = this.baseUrl + "/api/v1/students/{studentId}";
+        if (studentId === undefined || studentId === null)
+            throw new Error("The parameter 'studentId' must be defined.");
+        url_ = url_.replace("{studentId}", encodeURIComponent("" + studentId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStudentDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStudentDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StudentDetailsDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StudentDetailsDto>;
+        }));
+    }
+
+    protected processGetStudentDetails(response: HttpResponseBase): Observable<StudentDetailsDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentDetailsDto;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class StudentsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return OK
+     */
+    getStudentsRoster(): Observable<StudentRosterItemDto[]> {
+        let url_ = this.baseUrl + "/api/v1/coach/students";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStudentsRoster(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStudentsRoster(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StudentRosterItemDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StudentRosterItemDto[]>;
+        }));
+    }
+
+    protected processGetStudentsRoster(response: HttpResponseBase): Observable<StudentRosterItemDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentRosterItemDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class Coach_DashboardClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return OK
+     */
+    getCoachWorkoutPlans(): Observable<WorkoutPlanItemDto[]> {
+        let url_ = this.baseUrl + "/api/v1/coach/plans";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCoachWorkoutPlans(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCoachWorkoutPlans(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WorkoutPlanItemDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WorkoutPlanItemDto[]>;
+        }));
+    }
+
+    protected processGetCoachWorkoutPlans(response: HttpResponseBase): Observable<WorkoutPlanItemDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as WorkoutPlanItemDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getMovements(): Observable<MovementItemDto[]> {
+        let url_ = this.baseUrl + "/api/v1/coach/movements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMovements(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMovements(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MovementItemDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MovementItemDto[]>;
+        }));
+    }
+
+    protected processGetMovements(response: HttpResponseBase): Observable<MovementItemDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MovementItemDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param limitDays (optional) 
+     * @return OK
+     */
+    getRecentActivity(limitDays: number | undefined): Observable<ActivityItemDto[]> {
+        let url_ = this.baseUrl + "/api/v1/coach/activity?";
+        if (limitDays === null)
+            throw new Error("The parameter 'limitDays' cannot be null.");
+        else if (limitDays !== undefined)
+            url_ += "limitDays=" + encodeURIComponent("" + limitDays) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRecentActivity(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRecentActivity(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ActivityItemDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ActivityItemDto[]>;
+        }));
+    }
+
+    protected processGetRecentActivity(response: HttpResponseBase): Observable<ActivityItemDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ActivityItemDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class WorkoutPlansClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return Created
+     */
+    createWorkoutPlan(body: CreateWorkoutPlanCommand): Observable<WorkoutPlanDto> {
+        let url_ = this.baseUrl + "/api/v1/workout-plans";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -219,21 +533,80 @@ export class TodoItemsClient {
             })
         };
 
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateTodoItem(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateWorkoutPlan(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateTodoItem(response_ as any);
+                    return this.processCreateWorkoutPlan(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TodoItemDto>;
+                    return _observableThrow(e) as any as Observable<WorkoutPlanDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TodoItemDto>;
+                return _observableThrow(response_) as any as Observable<WorkoutPlanDto>;
         }));
     }
 
-    protected processUpdateTodoItem(response: HttpResponseBase): Observable<TodoItemDto> {
+    protected processCreateWorkoutPlan(response: HttpResponseBase): Observable<WorkoutPlanDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as WorkoutPlanDto;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getWorkoutPlan(planId: string): Observable<WorkoutPlanDetailDto> {
+        let url_ = this.baseUrl + "/api/v1/workout-plans/{planId}";
+        if (planId === undefined || planId === null)
+            throw new Error("The parameter 'planId' must be defined.");
+        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWorkoutPlan(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWorkoutPlan(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WorkoutPlanDetailDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WorkoutPlanDetailDto>;
+        }));
+    }
+
+    protected processGetWorkoutPlan(response: HttpResponseBase): Observable<WorkoutPlanDetailDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -243,7 +616,7 @@ export class TodoItemsClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TodoItemDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as WorkoutPlanDetailDto;
             return _observableOf(result200);
             }));
         } else if (status === 404) {
@@ -251,12 +624,6 @@ export class TodoItemsClient {
             let result404: any = null;
             result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
             return throwException("Not Found", status, _responseText, _headers, result404);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as HttpValidationProblemDetails;
-            return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -269,11 +636,11 @@ export class TodoItemsClient {
     /**
      * @return No Content
      */
-    deleteTodoItem(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/todo-items/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    publishWorkoutPlan(planId: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/workout-plans/{planId}/publish";
+        if (planId === undefined || planId === null)
+            throw new Error("The parameter 'planId' must be defined.");
+        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -283,12 +650,12 @@ export class TodoItemsClient {
             })
         };
 
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteTodoItem(response_);
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPublishWorkoutPlan(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDeleteTodoItem(response_ as any);
+                    return this.processPublishWorkoutPlan(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -297,7 +664,7 @@ export class TodoItemsClient {
         }));
     }
 
-    protected processDeleteTodoItem(response: HttpResponseBase): Observable<void> {
+    protected processPublishWorkoutPlan(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -323,20 +690,466 @@ export class TodoItemsClient {
     }
 }
 
-export interface CreateTodoItemCommand {
-    title: string;
-    description: string | null;
+@Injectable({
+    providedIn: 'root'
+})
+export class MovementsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return Created
+     */
+    createMovement(body: CreateMovementCommand): Observable<MovementDto> {
+        let url_ = this.baseUrl + "/api/v1/movements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateMovement(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateMovement(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MovementDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MovementDto>;
+        }));
+    }
+
+    protected processCreateMovement(response: HttpResponseBase): Observable<MovementDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MovementDto;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    uploadMovementVideo(movementId: string): Observable<MovementVideoUploadDto> {
+        let url_ = this.baseUrl + "/api/v1/movements/{movementId}/video";
+        if (movementId === undefined || movementId === null)
+            throw new Error("The parameter 'movementId' must be defined.");
+        url_ = url_.replace("{movementId}", encodeURIComponent("" + movementId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUploadMovementVideo(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUploadMovementVideo(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MovementVideoUploadDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MovementVideoUploadDto>;
+        }));
+    }
+
+    protected processUploadMovementVideo(response: HttpResponseBase): Observable<MovementVideoUploadDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MovementVideoUploadDto;
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getMovementVideoUrl(movementId: string): Observable<VideoUrlDto> {
+        let url_ = this.baseUrl + "/api/v1/movements/{movementId}/video-url";
+        if (movementId === undefined || movementId === null)
+            throw new Error("The parameter 'movementId' must be defined.");
+        url_ = url_.replace("{movementId}", encodeURIComponent("" + movementId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMovementVideoUrl(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMovementVideoUrl(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<VideoUrlDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<VideoUrlDto>;
+        }));
+    }
+
+    protected processGetMovementVideoUrl(response: HttpResponseBase): Observable<VideoUrlDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as VideoUrlDto;
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PlanEnrollmentClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return Created
+     */
+    enrollStudentToPlan(body: EnrollStudentToPlanCommand): Observable<PlanEnrollmentDto> {
+        let url_ = this.baseUrl + "/api/v1/plan-enrollments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processEnrollStudentToPlan(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processEnrollStudentToPlan(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PlanEnrollmentDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PlanEnrollmentDto>;
+        }));
+    }
+
+    protected processEnrollStudentToPlan(response: HttpResponseBase): Observable<PlanEnrollmentDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PlanEnrollmentDto;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getStudentPlanEnrollments(studentId: string): Observable<StudentPlanDto[]> {
+        let url_ = this.baseUrl + "/api/v1/plan-enrollments/students/{studentId}";
+        if (studentId === undefined || studentId === null)
+            throw new Error("The parameter 'studentId' must be defined.");
+        url_ = url_.replace("{studentId}", encodeURIComponent("" + studentId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStudentPlanEnrollments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStudentPlanEnrollments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StudentPlanDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StudentPlanDto[]>;
+        }));
+    }
+
+    protected processGetStudentPlanEnrollments(response: HttpResponseBase): Observable<StudentPlanDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentPlanDto[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ProgressClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "http://localhost:5118/";
+    }
+
+    /**
+     * @return OK
+     */
+    getMyProgress(): Observable<StudentProgressDto> {
+        let url_ = this.baseUrl + "/api/v1/my/progress";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMyProgress(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMyProgress(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StudentProgressDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StudentProgressDto>;
+        }));
+    }
+
+    protected processGetMyProgress(response: HttpResponseBase): Observable<StudentProgressDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as StudentProgressDto;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface ActivityItemDto {
+    id: string;
+    userId: string;
+    studentName: string;
+    studentEmail: string;
+    workoutName: string;
+    completedAt: string;
+    totalSets: number;
+    totalMovements: number;
 
     [key: string]: any;
 }
 
-export interface HttpValidationProblemDetails {
-    type?: string | null;
-    title?: string | null;
-    status?: number | null;
-    detail?: string | null;
-    instance?: string | null;
-    errors?: { [key: string]: string[]; };
+export interface CreateMovementCommand {
+    name: string;
+    description: string | null;
+    defaultSets: number;
+    defaultReps: number;
+    defaultRestSeconds: number | null;
+
+    [key: string]: any;
+}
+
+export interface CreateWorkoutPlanCommand {
+    name: string;
+    description: string | null;
+    difficulty: number;
+    durationWeeks: number;
+    trainingFrequencyDaysPerWeek: number;
+
+    [key: string]: any;
+}
+
+export interface EnrollStudentToPlanCommand {
+    studentId: string;
+    workoutPlanId: string;
+    selectedTrainingDays: number[];
+
+    [key: string]: any;
+}
+
+export interface MovementDto {
+    id: string;
+    name: string;
+    defaultSets: number;
+    defaultReps: number;
+    videoUrl: string | null;
+
+    [key: string]: any;
+}
+
+export interface MovementItemDto {
+    id: string;
+    name: string;
+    description: string;
+    defaultSets: number;
+    defaultReps: number;
+    defaultRestSeconds: number;
+    videoUrl: string | null;
+    videoCaption: string | null;
+
+    [key: string]: any;
+}
+
+export interface MovementVideoUploadDto {
+    movementId: string;
+    videoUrl: string;
+    caption: string;
+
+    [key: string]: any;
+}
+
+export interface PlanEnrollmentDto {
+    id: string;
+    studentId: string;
+    planId: string;
+    status: string;
 
     [key: string]: any;
 }
@@ -351,21 +1164,106 @@ export interface ProblemDetails {
     [key: string]: any;
 }
 
-export interface TodoItemDto {
-    id: string;
-    title: string;
-    description: string | null;
-    isCompleted: boolean;
-    createdAt: string;
-    completedAt: string | null;
+export interface RegisterStudentCommand {
+    email: string;
+    firstName: string;
+    lastName: string;
 
     [key: string]: any;
 }
 
-export interface UpdateTodoItemRequest {
-    title: string;
-    description: string | null;
-    isCompleted: boolean;
+export interface StudentDetailsDto {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    enrolledAt: string;
+
+    [key: string]: any;
+}
+
+export interface StudentPlanDto {
+    enrollmentId: string;
+    planId: string;
+    plannedEndDate: string;
+
+    [key: string]: any;
+}
+
+export interface StudentProgressDto {
+    workoutsCompleted: number;
+    workoutsMissed: number;
+    personalRecords: number;
+
+    [key: string]: any;
+}
+
+export interface StudentRosterItemDto {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    activePlanCount: number;
+    lastWorkoutDate: string | null;
+    hasPendingFeedback: boolean;
+    hasUnreadPrs: boolean;
+
+    [key: string]: any;
+}
+
+export interface UserDto {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    subscriptionStatus: string;
+
+    [key: string]: any;
+}
+
+export interface VideoUrlDto {
+    videoUrl: string;
+
+    [key: string]: any;
+}
+
+export interface WorkoutPlanDetailDto {
+    id: string;
+    name: string;
+    difficulty: string;
+    durationWeeks: number;
+    isPublished: boolean;
+    workouts: WorkoutSummaryDto[];
+
+    [key: string]: any;
+}
+
+export interface WorkoutPlanDto {
+    id: string;
+    name: string;
+    difficulty: string;
+    isPublished: boolean;
+
+    [key: string]: any;
+}
+
+export interface WorkoutPlanItemDto {
+    id: string;
+    name: string;
+    difficulty: string;
+    durationWeeks: number;
+    trainingFrequencyDaysPerWeek: number;
+    description: string;
+    enrolledStudentsCount: number;
+
+    [key: string]: any;
+}
+
+export interface WorkoutSummaryDto {
+    id: string;
+    name: string;
+    order: number;
 
     [key: string]: any;
 }

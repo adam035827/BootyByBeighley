@@ -1,10 +1,83 @@
 <div class="activity-feed">
   <div class="activity-feed__header">
-    <h1 class="activity-feed__title">Activity</h1>
-    <p class="activity-feed__subtitle">Recent student workouts, PRs, and feedback</p>
+    <div>
+      <h1 class="activity-feed__title">Activity</h1>
+      <p class="activity-feed__subtitle">Recent student workout completions</p>
+    </div>
+
+    <button
+      class="activity-feed__refresh"
+      type="button"
+      [disabled]="isLoading()"
+      (click)="refresh()"
+    >
+      Refresh
+    </button>
   </div>
 
-  <div class="activity-feed__content">
-    <p class="activity-feed__placeholder">Activity feed coming soon...</p>
+  <div class="activity-feed__filters" role="group" aria-label="Activity date range">
+    <button
+      type="button"
+      [class.activity-feed__filter--active]="selectedRange() === 7"
+      [attr.aria-pressed]="selectedRange() === 7"
+      (click)="selectRange(7)"
+    >
+      7 days
+    </button>
+    <button
+      type="button"
+      [class.activity-feed__filter--active]="selectedRange() === 30"
+      [attr.aria-pressed]="selectedRange() === 30"
+      (click)="selectRange(30)"
+    >
+      30 days
+    </button>
   </div>
+
+  @if (isLoading()) {
+    <div class="activity-feed__state" role="status">
+      <p>Loading recent activity...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="activity-feed__state activity-feed__state--error" role="alert">
+      <p>{{ errorMessage() }}</p>
+      <button type="button" (click)="refresh()">Try again</button>
+    </div>
+  } @else if (activities().length === 0) {
+    <div class="activity-feed__state">
+      <p>No workout activity in the last {{ selectedRange() }} days.</p>
+    </div>
+  } @else {
+    <ol class="activity-feed__list" aria-label="Recent workout activity">
+      @for (activity of activities(); track activity.id) {
+        <li class="activity-item">
+          <article class="activity-item__content">
+            <div class="activity-item__heading">
+              <div>
+                <p class="activity-item__student">{{ activity.studentName }}</p>
+                <h2 class="activity-item__workout">{{ activity.workoutName }}</h2>
+              </div>
+              <span class="activity-item__status">Completed</span>
+            </div>
+
+            <time class="activity-item__time" [attr.datetime]="activity.completedAt">
+              {{ activity.completedAt | date: 'MMM d, y, h:mm a' }}
+            </time>
+
+            <dl class="activity-item__metrics">
+              <div>
+                <dt>Movements</dt>
+                <dd>{{ activity.totalMovements }}</dd>
+              </div>
+              <div>
+                <dt>Sets logged</dt>
+                <dd>{{ activity.totalSets }}</dd>
+              </div>
+            </dl>
+
+          </article>
+        </li>
+      }
+    </ol>
+  }
 </div>

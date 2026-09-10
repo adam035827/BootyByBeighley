@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "ModernApp.Api.json",
+      "url": "http://localhost:5118/openapi/v1.json",
       "output": null,
       "newLineBehavior": "Auto"
     }

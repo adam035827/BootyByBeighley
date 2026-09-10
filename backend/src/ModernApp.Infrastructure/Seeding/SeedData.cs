@@ -10,11 +10,28 @@ namespace ModernApp.Infrastructure.Seeding;
 
 public static class SeedData
 {
+    private static readonly (string Email, string FirstName, string LastName)[] StudentProfiles =
+    [
+        ("maya.thompson@example.com", "Maya", "Thompson"),
+        ("elena.rodriguez@example.com", "Elena", "Rodriguez"),
+        ("aisha.patel@example.com", "Aisha", "Patel"),
+        ("chloe.martin@example.com", "Chloe", "Martin"),
+        ("jordan.kim@example.com", "Jordan", "Kim"),
+        ("priya.shah@example.com", "Priya", "Shah"),
+        ("naomi.brooks@example.com", "Naomi", "Brooks"),
+        ("sofia.hernandez@example.com", "Sofia", "Hernandez"),
+        ("camille.johnson@example.com", "Camille", "Johnson"),
+        ("tessa.nguyen@example.com", "Tessa", "Nguyen"),
+        ("amara.okafor@example.com", "Amara", "Okafor"),
+        ("lucia.bennett@example.com", "Lucia", "Bennett"),
+    ];
+
     public static async Task SeedAsync(AppDbContext context)
     {
-        // Only seed if database is empty
         if (context.Users.Any())
             return;
+
+        await using var transaction = await context.Database.BeginTransactionAsync();
 
         // Create a coach
         var coach = User.CreateCoach("coach@bootyfitness.com", "Coach", "Beighley");
@@ -22,9 +39,9 @@ public static class SeedData
 
         // Create sample students
         var students = new List<User>();
-        for (int i = 1; i <= 12; i++)
+        foreach (var profile in StudentProfiles)
         {
-            var student = User.CreateStudent($"student{i}@example.com", $"Student{i}", $"User{i}");
+            var student = User.CreateStudent(profile.Email, profile.FirstName, profile.LastName);
             students.Add(student);
             context.Users.Add(student);
         }
@@ -96,6 +113,9 @@ public static class SeedData
             ("Upper Body Day 1", "Focus on chest and shoulders", 45),
             ("Lower Body Day 1", "Focus on quads and glutes", 50),
             ("Full Body Day 1", "Balanced strength training", 60),
+            ("Upper Body Day 2", "Back and arms focus", 50),
+            ("Lower Body Day 2", "Hamstrings and posterior chain", 55),
+            ("Core and Conditioning", "Stability and endurance work", 40),
         };
 
         foreach (var (name, desc, duration) in plan1Workouts)
@@ -112,6 +132,8 @@ public static class SeedData
             ("Pull Day", "Back, biceps, rear delts", 60),
             ("Leg Day", "Quads, hamstrings, glutes", 75),
             ("Upper Power", "Low reps, heavy weight", 50),
+            ("Hypertrophy Arms", "Isolation and pump work", 55),
+            ("Lower Power", "Heavy deadlifts and squats", 70),
         };
 
         foreach (var (name, desc, duration) in plan2Workouts)
@@ -129,6 +151,8 @@ public static class SeedData
             ("Deadlift Day", "Deadlift, assistance", 90),
             ("Speed Squat", "Dynamic effort squat", 60),
             ("Speed Bench", "Dynamic effort bench", 60),
+            ("Assistance Day", "Secondary strength work", 75),
+            ("Competition Simulation", "Full meet prep workout", 120),
         };
 
         foreach (var (name, desc, duration) in plan3Workouts)
@@ -144,15 +168,18 @@ public static class SeedData
         var workoutMovements = new List<WorkoutMovement>();
         for (int i = 0; i < workouts.Count; i++)
         {
-            // Each workout gets 3-4 movements
-            for (int m = 0; m < Random.Shared.Next(3, 5); m++)
+            // Vary movement count: 2-5 movements per workout for diversity
+            var movementCount = Random.Shared.Next(2, 6);
+            for (int m = 0; m < movementCount; m++)
             {
                 var movement = movements[Random.Shared.Next(movements.Count)];
+                // Vary prescribed sets: ±1 from default for each movement
+                var varyingSets = Math.Max(2, movement.DefaultSets + Random.Shared.Next(-1, 3));
                 var workoutMovement = WorkoutMovement.Create(
                     workoutId: workouts[i].Id,
                     movementId: movement.Id,
                     order: m + 1,
-                    prescribedSets: movement.DefaultSets,
+                    prescribedSets: varyingSets,
                     prescribedReps: movement.DefaultReps,
                     prescribedRestSeconds: 60);
 
@@ -167,6 +194,8 @@ public static class SeedData
         var enrollments = new List<PlanEnrollment>();
         var selectedDays = new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday };
         var selectedDays4x = new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+        var selectedDays5x = new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+        var enrollmentStartDate = DateTime.UtcNow.AddDays(-30);
 
         // Plan 1: First 6 students
         foreach (var student in students.Take(6))
@@ -175,7 +204,8 @@ public static class SeedData
                 userId: student.Id,
                 workoutPlanId: plan1.Id,
                 selectedTrainingDays: selectedDays,
-                durationWeeks: 8);
+                durationWeeks: 8,
+                startDate: enrollmentStartDate);
 
             enrollments.Add(enrollment);
             context.PlanEnrollments.Add(enrollment);
@@ -188,7 +218,8 @@ public static class SeedData
                 userId: student.Id,
                 workoutPlanId: plan2.Id,
                 selectedTrainingDays: selectedDays4x,
-                durationWeeks: 12);
+                durationWeeks: 12,
+                startDate: enrollmentStartDate);
 
             enrollments.Add(enrollment);
             context.PlanEnrollments.Add(enrollment);
@@ -200,8 +231,9 @@ public static class SeedData
             var enrollment = PlanEnrollment.Create(
                 userId: student.Id,
                 workoutPlanId: plan3.Id,
-                selectedTrainingDays: selectedDays4x,
-                durationWeeks: 16);
+                selectedTrainingDays: selectedDays5x,
+                durationWeeks: 16,
+                startDate: enrollmentStartDate);
 
             enrollments.Add(enrollment);
             context.PlanEnrollments.Add(enrollment);
@@ -210,14 +242,14 @@ public static class SeedData
         await context.SaveChangesAsync();
 
         // Create detailed workout logs
-        var workoutStartDate = DateTime.UtcNow.AddDays(-30);
+        var workoutDateAnchor = DateTime.UtcNow.AddHours(-1);
 
         foreach (var enrollment in enrollments.Take(10))
         {
-            // 5-10 completed workouts per enrollment
-            for (int i = 0; i < Random.Shared.Next(5, 11); i++)
+            // 8-15 completed workouts per enrollment for richer activity feed
+            for (int i = 0; i < Random.Shared.Next(8, 16); i++)
             {
-                var logDate = workoutStartDate.AddDays(i * 2 + Random.Shared.Next(0, 2));
+                var logDate = workoutDateAnchor.AddDays(-(i * 2 + Random.Shared.Next(0, 2)));
 
                 // Pick a random workout from the plan
                 var planWorkouts = workouts.Where(w => w.WorkoutPlanId == enrollment.WorkoutPlanId).ToList();
@@ -229,7 +261,9 @@ public static class SeedData
                 var setEntries = new List<WorkoutLogSetEntry>();
                 foreach (var wm in workoutMovementList)
                 {
-                    for (int setNum = 0; setNum < wm.PrescribedSets; setNum++)
+                    // Vary completed sets: ±1 from prescribed for each movement
+                    var completedSets = Math.Max(1, wm.PrescribedSets + Random.Shared.Next(-1, 2));
+                    for (int setNum = 0; setNum < completedSets; setNum++)
                     {
                         var repsVariation = Random.Shared.Next(-3, 4);
                         var setEntry = WorkoutLogSetEntry.Create(
@@ -237,24 +271,26 @@ public static class SeedData
                             workoutMovementId: wm.Id,
                             setNumber: setNum + 1,
                             repsCompleted: Math.Max(1, wm.PrescribedReps + repsVariation),
-                            weightUsed: 10 + (setNum * 2.5m) + (decimal)Random.Shared.Next(0, 10));
+                            weightUsed: 15 + (setNum * 2.5m) + (decimal)Random.Shared.Next(-5, 15));
 
                         setEntries.Add(setEntry);
                     }
                 }
 
-                var notes = new[] { "Great workout!", "Felt strong today", "Need more sleep", "PR on this exercise!", "Good form, maintained tempo", null };
+                var notes = new[] { "Great workout!", "Felt strong today", "Need more sleep", "PR on this movement!", "Good form, maintained tempo", null };
                 var logEntry = WorkoutLogEntry.CreateCompleted(
                     userId: enrollment.UserId,
                     workoutId: workout.Id,
                     planEnrollmentId: enrollment.Id,
                     loggedSets: setEntries,
-                    notes: notes[Random.Shared.Next(notes.Length)]);
+                    notes: notes[Random.Shared.Next(notes.Length)],
+                    completedAt: logDate);
 
                 context.WorkoutLogEntries.Add(logEntry);
             }
         }
 
         await context.SaveChangesAsync();
+        await transaction.CommitAsync();
     }
 }

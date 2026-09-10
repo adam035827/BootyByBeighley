@@ -19,23 +19,27 @@ public class PlanEnrollment : Entity
         Guid userId,
         Guid workoutPlanId,
         List<DayOfWeek> selectedTrainingDays,
-        int durationWeeks)
+        int durationWeeks,
+        DateTime? startDate = null)
     {
         if (selectedTrainingDays == null || selectedTrainingDays.Count == 0)
             throw new ArgumentException("SelectedTrainingDays cannot be empty", nameof(selectedTrainingDays));
         if (durationWeeks < 1)
             throw new ArgumentException("DurationWeeks must be positive", nameof(durationWeeks));
 
-        var now = DateTime.UtcNow;
+        var enrollmentDate = startDate ?? DateTime.UtcNow;
+        if (enrollmentDate.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("StartDate must be UTC", nameof(startDate));
+
         var selectedDaysJson = System.Text.Json.JsonSerializer.Serialize(selectedTrainingDays);
 
         return new PlanEnrollment
         {
             UserId = userId,
             WorkoutPlanId = workoutPlanId,
-            EnrolledAt = now,
-            StartDate = now,
-            PlannedEndDate = now.AddDays(durationWeeks * 7),
+            EnrolledAt = enrollmentDate,
+            StartDate = enrollmentDate,
+            PlannedEndDate = enrollmentDate.AddDays(durationWeeks * 7),
             SelectedTrainingDays = selectedDaysJson,
             Status = PlanEnrollmentStatus.Active,
             CompletedAt = null

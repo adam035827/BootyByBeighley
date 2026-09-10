@@ -13,8 +13,7 @@ public record ActivityItemDto(
     string WorkoutName,
     DateTime CompletedAt,
     int TotalSets,
-    int TotalMovements,
-    string? Notes);
+    int TotalMovements);
 
 public class GetRecentActivityQueryHandler : IQueryHandler<GetRecentActivityQuery, List<ActivityItemDto>>
 {
@@ -58,8 +57,7 @@ public class GetRecentActivityQueryHandler : IQueryHandler<GetRecentActivityQuer
                 WorkoutName: workoutName,
                 CompletedAt: log.CompletedAt,
                 TotalSets: totalSets,
-                TotalMovements: totalMovements,
-                Notes: log.Notes));
+                TotalMovements: totalMovements));
         }
 
         return result;

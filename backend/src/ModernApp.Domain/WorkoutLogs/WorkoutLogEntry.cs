@@ -22,17 +22,24 @@ public class WorkoutLogEntry : Entity
         Guid workoutId,
         Guid planEnrollmentId,
         List<WorkoutLogSetEntry> loggedSets,
-        string? notes = null)
+        string? notes = null,
+        DateTime? completedAt = null)
     {
         if (loggedSets == null || loggedSets.Count == 0)
             throw new ArgumentException("LoggedSets cannot be empty for completed workout", nameof(loggedSets));
+
+        var completionTime = completedAt ?? DateTime.UtcNow;
+        if (completionTime.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("CompletedAt must be UTC", nameof(completedAt));
+        if (completionTime > DateTime.UtcNow)
+            throw new ArgumentException("CompletedAt cannot be in the future", nameof(completedAt));
 
         return new WorkoutLogEntry
         {
             UserId = userId,
             WorkoutId = workoutId,
             PlanEnrollmentId = planEnrollmentId,
-            CompletedAt = DateTime.UtcNow,
+            CompletedAt = completionTime,
             Notes = notes,
             Status = WorkoutStatus.Completed,
             MissedReason = null,
