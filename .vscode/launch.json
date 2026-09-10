@@ -31,7 +31,6 @@
       "request": "launch",
       "url": "http://localhost:4200",
       "userDataDir": true,
-      "preLaunchTask": "serve: frontend",
       "presentation": { "hidden": true, "group": "compound" }
     }
   ]
