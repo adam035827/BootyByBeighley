@@ -59,17 +59,7 @@
         "panel": "dedicated",
         "group": "startup"
       },
-      "problemMatcher": {
-        "owner": "dotnet",
-        "pattern": {
-          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Now listening on:"
-        }
-      }
+      "problemMatcher": []
     },
     {
       "label": "prepare: backend",
@@ -158,14 +148,12 @@
         "group": "startup"
       },
       "problemMatcher": {
-        "owner": "angular",
-        "pattern": {
-          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$"
-        },
+        "owner": "typescript",
+        "pattern": "$tsc",
         "background": {
           "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Local:\\s+http://"
+          "beginsPattern": "^.*",
+          "endsPattern": "Application bundle generation complete|→ Local:"
         }
       }
     },
