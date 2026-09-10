@@ -59,7 +59,17 @@
         "panel": "dedicated",
         "group": "startup"
       },
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "dotnet",
+        "pattern": {
+          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Now listening on:"
+        }
+      }
     },
     {
       "label": "prepare: backend",
@@ -147,7 +157,17 @@
         "panel": "dedicated",
         "group": "startup"
       },
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "angular",
+        "pattern": {
+          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Local:\\s+http://"
+        }
+      }
     },
     {
       "label": "echo: ready",
