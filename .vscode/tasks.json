@@ -59,18 +59,7 @@
         "panel": "dedicated",
         "group": "startup"
       },
-      "problemMatcher": {
-        "owner": "dotnet",
-        "pattern": {
-          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$",
-          "message": 1
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Now listening on:"
-        }
-      }
+      "problemMatcher": []
     },
     {
       "label": "prepare: backend",
@@ -158,33 +147,39 @@
         "panel": "dedicated",
         "group": "startup"
       },
-      "problemMatcher": {
-        "owner": "angular",
-        "pattern": {
-          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$",
-          "message": 1
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Local:\\s+http://"
+      "problemMatcher": []
+    },
+    {
+      "label": "echo: ready",
+      "type": "shell",
+      "command": "Write-Host '✓ Application is ready! Backend: http://127.0.0.1:5118 | Frontend: http://127.0.0.1:4200'",
+      "options": {
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-NoProfile", "-Command"]
         }
-      }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "startup"
+      },
+      "problemMatcher": []
     },
     {
       "label": "run: application",
-      "dependsOn": ["kill: all", "prepare: backend", "run: backend", "wait: backend", "generate: nswag client", "serve: frontend"],
+      "dependsOn": ["kill: all", "prepare: backend", "run: backend", "wait: backend", "generate: nswag client", "serve: frontend", "echo: ready"],
       "dependsOrder": "sequence",
       "presentation": {
         "reveal": "always",
         "panel": "shared",
         "group": "startup"
       },
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
-      },
-      "problemMatcher": []
+      }
     }
   ]
 }
