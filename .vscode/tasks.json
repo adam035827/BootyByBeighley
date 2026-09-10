@@ -47,8 +47,34 @@
       "problemMatcher": []
     },
     {
+      "label": "run: backend",
+      "type": "shell",
+      "command": "dotnet run --project src/ModernApp.Api/ModernApp.Api.csproj",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "startup"
+      },
+      "problemMatcher": {
+        "owner": "dotnet",
+        "pattern": {
+          "regexp": "^(VSCODE_SENTINEL_NEVER_MATCHES)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Now listening on:"
+        }
+      }
+    },
+    {
       "label": "prepare: backend",
-      "dependsOn": ["kill: backend", "build: backend", "generate: nswag client"],
+      "dependsOn": ["kill: backend", "build: backend"],
       "dependsOrder": "sequence",
       "presentation": {
         "reveal": "silent",
@@ -144,6 +170,21 @@
           "endsPattern": "Local:\\s+http://"
         }
       }
+    },
+    {
+      "label": "run: application",
+      "dependsOn": ["kill: all", "prepare: backend", "run: backend", "wait: backend", "generate: nswag client", "serve: frontend"],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "startup"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
     }
   ]
 }
