@@ -23,8 +23,9 @@ styles.scss
 ## Current Theme: Booty By Beighley Zodiac Branding
 
 The active theme features the official Booty By Beighley branding:
-- **Background**: Sage green (`#8B8B4F`)
+- **Background**: Clean white (`#FFFFFF`)
 - **Primary Color**: Mauve rose pink (`#D798A8`) - used for headings and primary actions
+- **Secondary Color**: Sage green (`#8B8B4F`) - used for accents and borders
 - **Accent Color**: Golden yellow (`#F4E34D`) - success, highlights, and emphasis
 - **Text**: Dark text on light backgrounds, cream/off-white on dark backgrounds
 
@@ -36,7 +37,7 @@ All theme colors are defined in `frontend/app/src/styles/_theme.scss`:
 --theme-primary:         #D798A8;  // Mauve Rose Pink - primary headings
 --theme-primary-dark:    #B87090;  // Darker mauve
 --theme-primary-light:   #E5B5C8;  // Lighter mauve
---theme-secondary:       #8B8B4F;  // Sage Green - backgrounds
+--theme-secondary:       #8B8B4F;  // Sage Green - accents
 --theme-secondary-dark:  #6F6F3F;  // Darker sage
 --theme-secondary-light: #ABABAF;  // Lighter sage
 --theme-background:      #8B8B4F;  // Sage green background
