@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+__pycache__/
+.venv/
+venv/
+
+# Build outputs
+bin/
+obj/
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Generated files
+*.log
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+test-results/
+playwright-report/
+.nyc_output/
+coverage/
+
+# Development
+.vscode/settings.json
+*.swp
+*.swo
+.env
+.env.local
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
