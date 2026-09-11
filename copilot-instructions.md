@@ -118,9 +118,9 @@ When generating persistence logic:
 - Use **PostgreSQL** via **EF Core** (Npgsql provider) as the primary data store.
 - All entities are mapped as EF Core entities with explicit relationships and indexes.
 - Manage schema changes with EF Core migrations (`dotnet ef migrations add`).
-- The `AppDbContext` lives in `ModernApp.Infrastructure/Persistence/` — never reference it from Application, Domain, or API.
+- The `AppDbContext` lives in `BootyByBeighley.Infrastructure/Persistence/` — never reference it from Application, Domain, or API.
 - Application layer depends only on abstractions (repository interfaces defined in Application, implemented in Infrastructure).
-- All repository implementations live in `ModernApp.Infrastructure/Repositories/`.
+- All repository implementations live in `BootyByBeighley.Infrastructure/Repositories/`.
 - Define indexes explicitly and document their rationale in a comment.
 - Keep document classes and mapping helpers `internal` to Infrastructure so they cannot leak across the boundary.
 

@@ -23,25 +23,25 @@ You are the **Test Writer** for **Booty by Beighley**. You write automated tests
 
 ```
 backend/tests/
-  ModernApp.Domain.Tests/
-  ModernApp.Application.Tests/
-  ModernApp.Infrastructure.Tests/
+  BootyByBeighley.Domain.Tests/
+  BootyByBeighley.Application.Tests/
+  BootyByBeighley.Infrastructure.Tests/
 ```
 
 ### What to test
 
-**Domain tests** (`ModernApp.Domain.Tests/`)
+**Domain tests** (`BootyByBeighley.Domain.Tests/`)
 - Entity invariants and business rules
 - Value object equality and validation
 - Domain service logic
 
-**Application tests** (`ModernApp.Application.Tests/`)
+**Application tests** (`BootyByBeighley.Application.Tests/`)
 - Command and query handlers in isolation
 - Mock all Infrastructure interfaces with NSubstitute
 - Test both happy path and error/edge cases
 - Assert correct ProblemDetails are returned on failure
 
-**Integration tests** (`ModernApp.Infrastructure.Tests/`)
+**Integration tests** (`BootyByBeighley.Infrastructure.Tests/`)
 - Use **Testcontainers for .NET** to spin up a real PostgreSQL container for integration tests.
 - Test repository implementations against real data shapes.
 - Never use an in-memory EF Core provider for integration tests — it does not enforce relational constraints.

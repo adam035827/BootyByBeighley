@@ -14,9 +14,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "prepare: backend",
-      "program": "${workspaceFolder}/backend/src/ModernApp.Api/bin/Debug/net10.0/ModernApp.Api.dll",
+      "program": "${workspaceFolder}/backend/src/BootyByBeighley.Api/bin/Debug/net10.0/BootyByBeighley.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/backend/src/ModernApp.Api",
+      "cwd": "${workspaceFolder}/backend/src/BootyByBeighley.Api",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -31,6 +31,7 @@
       "request": "launch",
       "url": "http://localhost:4200",
       "userDataDir": true,
+      "preLaunchTask": "serve: frontend",
       "presentation": { "hidden": true, "group": "compound" }
     }
   ]

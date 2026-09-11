@@ -1,4 +1,4 @@
-# Modern Architecture Template
+# Booty by Beighley
 
 This repository is a clean starting point for building modern full‑stack applications. It provides an empty but structured layout for:
 
@@ -52,7 +52,7 @@ This prompt ensures Copilot has loaded and understood the full architecture befo
 
 2. **Configure the Cosmos DB connection string** (stored in .NET user secrets — never committed)
    ```powershell
-   cd backend/src/ModernApp.Api
+   cd backend/src/BootyByBeighley.Api
    dotnet user-secrets set "Cosmos:ConnectionString" "<your-connection-string>"
    ```
    For the local emulator, the connection string is:
@@ -74,7 +74,7 @@ This will, in order:
 **Option B — terminal**
 ```powershell
 # Terminal 1 — backend
-cd backend/src/ModernApp.Api
+cd backend/src/BootyByBeighley.Api
 dotnet run
 
 # Terminal 2 — regenerate API client (once backend is up)

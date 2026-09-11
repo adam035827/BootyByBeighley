@@ -101,7 +101,7 @@ Before code changes are accepted by the agentic system, automated checks must va
 ### Existing Automated Checks
 
 **1. Backend Build Validation**
-- **Command:** `cd backend/src/ModernApp.Api && dotnet build`
+- **Command:** `cd backend/src/BootyByBeighley.Api && dotnet build`
 - **What passes tell you:** C# code compiles without errors; NuGet dependencies resolve; domain models and API contracts are valid; Entity Framework migrations are correct
 - **Current status:** Passing (18 warnings for known vulnerable dependencies, not blocking)
 

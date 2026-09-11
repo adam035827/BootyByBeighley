@@ -304,7 +304,7 @@ The student's home screen has three sections, with **Today's Workout as the prim
 
 ## Technical Alignment
 
-This app is built on the **Modern Architecture Template** already in this repo.
+This app is built on the **Booty by Beighley** already in this repo.
 The template's Cosmos DB infrastructure layer is being **replaced with PostgreSQL + EF Core** — the Domain and Application layers are unaffected by this change.
 
 ### Database
@@ -318,15 +318,15 @@ The template's Cosmos DB infrastructure layer is being **replaced with PostgreSQ
 
 | Concept | Layer |
 |---|---|
-| `WorkoutPlan`, `Workout`, `Movement`, `Questionnaire`, `QuestionnaireResponse`, `MatchingRule`, `PlanEnrollment`, `WorkoutLogEntry`, `WorkoutFeedback`, `MissedWorkout`, `PersonalRecord`, `User` | `ModernApp.Domain` |
-| EF Core `DbContext`, repositories, PostgreSQL configuration | `ModernApp.Infrastructure` |
-| Azure Blob Storage client (video upload/retrieval) | `ModernApp.Infrastructure` |
-| Azure AD B2C JWT Bearer validation | `ModernApp.Api` |
-| CQRS handlers for each feature | `ModernApp.Application` |
-| Minimal API endpoints | `ModernApp.Api` |
+| `WorkoutPlan`, `Workout`, `Movement`, `Questionnaire`, `QuestionnaireResponse`, `MatchingRule`, `PlanEnrollment`, `WorkoutLogEntry`, `WorkoutFeedback`, `MissedWorkout`, `PersonalRecord`, `User` | `BootyByBeighley.Domain` |
+| EF Core `DbContext`, repositories, PostgreSQL configuration | `BootyByBeighley.Infrastructure` |
+| Azure Blob Storage client (video upload/retrieval) | `BootyByBeighley.Infrastructure` |
+| Azure AD B2C JWT Bearer validation | `BootyByBeighley.Api` |
+| CQRS handlers for each feature | `BootyByBeighley.Application` |
+| Minimal API endpoints | `BootyByBeighley.Api` |
 | Angular feature modules | `frontend/app/src/app/features/` |
 
 ### Infrastructure migration note
-The `CosmosDocument` base class, `CosmosClient` DI registration, and Cosmos-specific repository base in `ModernApp.Infrastructure` will be removed and replaced with an EF Core `DbContext` before any feature code is written.
+The `CosmosDocument` base class, `CosmosClient` DI registration, and Cosmos-specific repository base in `BootyByBeighley.Infrastructure` will be removed and replaced with an EF Core `DbContext` before any feature code is written.
 
-The app name `ModernApp` used throughout the codebase is a **placeholder** inherited from the template and will be renamed.
+The app name `BootyByBeighley` used throughout the codebase is a **placeholder** inherited from the template and will be renamed.

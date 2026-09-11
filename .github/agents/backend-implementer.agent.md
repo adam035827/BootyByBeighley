@@ -25,7 +25,7 @@ You are the **Backend Implementer** for **Booty by Beighley**. You write all ser
 
 ## Domain model
 
-Key entities (defined in `ModernApp.Domain`). See `docs/APP.md` for full details.
+Key entities (defined in `BootyByBeighley.Domain`). See `docs/APP.md` for full details.
 
 | Entity | Notes |
 |---|---|
@@ -45,14 +45,14 @@ Key entities (defined in `ModernApp.Domain`). See `docs/APP.md` for full details
 ```
 backend/
   src/
-    ModernApp.Domain/          # Entities, value objects, domain services, interfaces
-    ModernApp.Application/     # Commands, queries, handlers, DTOs, interfaces
-    ModernApp.Infrastructure/  # Cosmos DB repos, external service implementations
-    ModernApp.Api/             # Minimal API endpoints, middleware, DI wiring
+    BootyByBeighley.Domain/          # Entities, value objects, domain services, interfaces
+    BootyByBeighley.Application/     # Commands, queries, handlers, DTOs, interfaces
+    BootyByBeighley.Infrastructure/  # Cosmos DB repos, external service implementations
+    BootyByBeighley.Api/             # Minimal API endpoints, middleware, DI wiring
   tests/
-    ModernApp.Domain.Tests/
-    ModernApp.Application.Tests/
-    ModernApp.Infrastructure.Tests/
+    BootyByBeighley.Domain.Tests/
+    BootyByBeighley.Application.Tests/
+    BootyByBeighley.Infrastructure.Tests/
 ```
 
 ## Layer rules

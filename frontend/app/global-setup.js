@@ -3,7 +3,7 @@ const fs = require('fs');
 const net = require('net');
 const path = require('path');
 
-const backendProject = path.resolve(__dirname, '..', '..', 'backend', 'src', 'ModernApp.Api', 'ModernApp.Api.csproj');
+const backendProject = path.resolve(__dirname, '..', '..', 'backend', 'src', 'BootyByBeighley.Api', 'BootyByBeighley.Api.csproj');
 const backendUrl = '127.0.0.1';
 const backendPort = 5118;
 const stateFile = path.resolve(__dirname, 'playwright-backend.json');

@@ -60,5 +60,5 @@ infrastructure/
 - Support at minimum: `dev`, `stage`, `prod` environments.
 
 ### Naming conventions
-- Use a consistent naming pattern: `{resourceType}-{appName}-{environment}` (e.g., `ca-modernapp-dev`).
+- Use a consistent naming pattern: `{resourceType}-{appName}-{environment}` (e.g., `ca-bootybybeighley-dev`).
 - Use `@allowed` constraints on parameters where appropriate (e.g., SKUs, locations).

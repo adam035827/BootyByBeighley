@@ -20,7 +20,7 @@ All work follows Clean Architecture boundaries and CQRS patterns defined in [Bac
 
 ---
 
-## 1. Domain Layer (`ModernApp.Domain`)
+## 1. Domain Layer (`BootyByBeighley.Domain`)
 
 ### 1.1 Core Entities
 
@@ -428,11 +428,11 @@ public enum WorkoutStatus
 
 ---
 
-## 2. Infrastructure Layer (`ModernApp.Infrastructure`)
+## 2. Infrastructure Layer (`BootyByBeighley.Infrastructure`)
 
 ### 2.1 EF Core DbContext
 
-Create `ModernApp.Infrastructure/Persistence/AppDbContext.cs` with:
+Create `BootyByBeighley.Infrastructure/Persistence/AppDbContext.cs` with:
 
 ```
 DbSets:
@@ -460,7 +460,7 @@ Key Configuration:
 
 ### 2.2 Repository Pattern (Optional but Recommended)
 
-If using repositories, define in `ModernApp.Infrastructure/Repositories/`:
+If using repositories, define in `BootyByBeighley.Infrastructure/Repositories/`:
 - `IUserRepository` / `UserRepository`
 - `IWorkoutPlanRepository` / `WorkoutPlanRepository`
 - `IPlanEnrollmentRepository` / `PlanEnrollmentRepository`
@@ -470,7 +470,7 @@ Or: Query directly via DbContext in handlers (CQRS queries naturally map to EF q
 
 ### 2.3 Azure Blob Storage Client
 
-Create `ModernApp.Infrastructure/Storage/IBlobStorageService.cs` interface:
+Create `BootyByBeighley.Infrastructure/Storage/IBlobStorageService.cs` interface:
 ```csharp
 public interface IBlobStorageService
 {
@@ -482,14 +482,14 @@ public interface IBlobStorageService
 }
 ```
 
-Implement in `ModernApp.Infrastructure/Storage/AzureBlobStorageService.cs`:
+Implement in `BootyByBeighley.Infrastructure/Storage/AzureBlobStorageService.cs`:
 - Use `Azure.Storage.Blobs.BlobContainerClient` from `Azure.Storage.Blobs` NuGet
 - Generate signed URLs with SAS token (read-only for student views)
 - Handle upload errors gracefully (ProblemDetails response)
 
 ### 2.4 Dependency Injection
 
-Update `ModernApp.Infrastructure/DependencyInjection.cs`:
+Update `BootyByBeighley.Infrastructure/DependencyInjection.cs`:
 ```csharp
 public static IServiceCollection AddInfrastructure(
     this IServiceCollection services, IConfiguration configuration)
@@ -518,8 +518,8 @@ public static IServiceCollection AddInfrastructure(
 
 Create initial migration:
 ```bash
-cd backend/src/ModernApp.Infrastructure
-dotnet ef migrations add InitialCreate --startup-project ../ModernApp.Api
+cd backend/src/BootyByBeighley.Infrastructure
+dotnet ef migrations add InitialCreate --startup-project ../BootyByBeighley.Api
 ```
 
 Update connection string in `appsettings.Development.json`:
@@ -538,17 +538,17 @@ Update connection string in `appsettings.Development.json`:
 
 ---
 
-## 3. Application Layer (`ModernApp.Application`)
+## 3. Application Layer (`BootyByBeighley.Application`)
 
 ### 3.1 Feature: User Registration (Student)
 
-**Feature Folder**: `ModernApp.Application/Features/Users/`
+**Feature Folder**: `BootyByBeighley.Application/Features/Users/`
 
 **Files**:
 
 #### `RegisterStudentCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.Users;
+namespace BootyByBeighley.Application.Features.Users;
 
 public record RegisterStudentCommand(
     [EmailAddress] string Email,
@@ -594,7 +594,7 @@ public record UserDto(
 
 #### `GetStudentQuery.cs`
 ```csharp
-namespace ModernApp.Application.Features.Users;
+namespace BootyByBeighley.Application.Features.Users;
 
 public record GetStudentQuery(Guid StudentId) : IQuery<StudentDetailsDto?>;
 
@@ -624,11 +624,11 @@ public record StudentDetailsDto(
 
 ### 3.2 Feature: Questionnaire & Responses
 
-**Feature Folder**: `ModernApp.Application/Features/Questionnaire/`
+**Feature Folder**: `BootyByBeighley.Application/Features/Questionnaire/`
 
 #### `SubmitQuestionnaireResponsesCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.Questionnaire;
+namespace BootyByBeighley.Application.Features.Questionnaire;
 
 public record SubmitQuestionnaireResponsesCommand(
     Guid StudentId,
@@ -656,11 +656,11 @@ public sealed class SubmitQuestionnaireResponsesCommandHandler
 
 ### 3.3 Feature: Workout Plan Management (Coach)
 
-**Feature Folder**: `ModernApp.Application/Features/WorkoutPlans/`
+**Feature Folder**: `BootyByBeighley.Application/Features/WorkoutPlans/`
 
 #### `CreateWorkoutPlanCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutPlans;
+namespace BootyByBeighley.Application.Features.WorkoutPlans;
 
 public record CreateWorkoutPlanCommand(
     [StringLength(255)] string Name,
@@ -698,7 +698,7 @@ public record WorkoutPlanDto(Guid Id, string Name, string Difficulty, bool IsPub
 
 #### `PublishWorkoutPlanCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutPlans;
+namespace BootyByBeighley.Application.Features.WorkoutPlans;
 
 public record PublishWorkoutPlanCommand(Guid PlanId) : ICommand<bool>;
 
@@ -721,7 +721,7 @@ public sealed class PublishWorkoutPlanCommandHandler(IWorkoutPlanRepository plan
 
 #### `GetWorkoutPlanQuery.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutPlans;
+namespace BootyByBeighley.Application.Features.WorkoutPlans;
 
 public record GetWorkoutPlanQuery(Guid PlanId) : IQuery<WorkoutPlanDetailDto?>;
 
@@ -754,11 +754,11 @@ public record WorkoutSummaryDto(Guid Id, string Name, int Order);
 
 ### 3.4 Feature: Movements (Coach)
 
-**Feature Folder**: `ModernApp.Application/Features/Movements/`
+**Feature Folder**: `BootyByBeighley.Application/Features/Movements/`
 
 #### `CreateMovementCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.Movements;
+namespace BootyByBeighley.Application.Features.Movements;
 
 public record CreateMovementCommand(
     [StringLength(255)] string Name,
@@ -795,7 +795,7 @@ public record MovementDto(Guid Id, string Name, int DefaultSets,
 
 #### `UploadMovementVideoCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.Movements;
+namespace BootyByBeighley.Application.Features.Movements;
 
 public record UploadMovementVideoCommand(
     Guid MovementId,
@@ -836,11 +836,11 @@ public record MovementVideoUploadDto(Guid MovementId, string VideoUrl, string Ca
 
 ### 3.5 Feature: Plan Enrollment (Coach)
 
-**Feature Folder**: `ModernApp.Application/Features/PlanEnrollment/`
+**Feature Folder**: `BootyByBeighley.Application/Features/PlanEnrollment/`
 
 #### `EnrollStudentToPlanCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.PlanEnrollment;
+namespace BootyByBeighley.Application.Features.PlanEnrollment;
 
 public record EnrollStudentToPlanCommand(
     Guid StudentId,
@@ -886,7 +886,7 @@ public record PlanEnrollmentDto(Guid Id, Guid StudentId, Guid PlanId, string Sta
 
 #### `GetStudentPlansQuery.cs`
 ```csharp
-namespace ModernApp.Application.Features.PlanEnrollment;
+namespace BootyByBeighley.Application.Features.PlanEnrollment;
 
 public record GetStudentPlansQuery(Guid StudentId) : IQuery<List<StudentPlanDto>>;
 
@@ -911,11 +911,11 @@ public record StudentPlanDto(Guid EnrollmentId, Guid PlanId, DateTime PlannedEnd
 
 ### 3.6 Feature: Workout Logging (Student)
 
-**Feature Folder**: `ModernApp.Application/Features/WorkoutLogging/`
+**Feature Folder**: `BootyByBeighley.Application/Features/WorkoutLogging/`
 
 #### `LogWorkoutCompletionCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutLogging;
+namespace BootyByBeighley.Application.Features.WorkoutLogging;
 
 public record LogWorkoutCompletionCommand(
     Guid StudentId,
@@ -984,7 +984,7 @@ public record PersonalRecordDetectionDto(Guid MovementId, decimal Weight);
 
 #### `SubmitWorkoutFeedbackCommand.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutLogging;
+namespace BootyByBeighley.Application.Features.WorkoutLogging;
 
 public record SubmitWorkoutFeedbackCommand(
     Guid StudentId,
@@ -1019,7 +1019,7 @@ public record WorkoutFeedbackDto(Guid Id, int DifficultyRating);
 
 #### `GetStudentProgressQuery.cs`
 ```csharp
-namespace ModernApp.Application.Features.WorkoutLogging;
+namespace BootyByBeighley.Application.Features.WorkoutLogging;
 
 public record GetStudentProgressQuery(Guid StudentId) : IQuery<StudentProgressDto>;
 
@@ -1044,18 +1044,18 @@ public record StudentProgressDto(int WorkoutsCompleted, int WorkoutsMissed, int 
 
 ### 3.7 Dependency Injection
 
-Update `ModernApp.Application/DependencyInjection.cs`:
+Update `BootyByBeighley.Application/DependencyInjection.cs`:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using ModernApp.Application.Common.Interfaces;
-using ModernApp.Application.Features.Users;
-using ModernApp.Application.Features.WorkoutPlans;
-using ModernApp.Application.Features.Movements;
-using ModernApp.Application.Features.PlanEnrollment;
-using ModernApp.Application.Features.WorkoutLogging;
+using BootyByBeighley.Application.Common.Interfaces;
+using BootyByBeighley.Application.Features.Users;
+using BootyByBeighley.Application.Features.WorkoutPlans;
+using BootyByBeighley.Application.Features.Movements;
+using BootyByBeighley.Application.Features.PlanEnrollment;
+using BootyByBeighley.Application.Features.WorkoutLogging;
 
-namespace ModernApp.Application;
+namespace BootyByBeighley.Application;
 
 public static class DependencyInjection
 {
@@ -1110,7 +1110,7 @@ public static class DependencyInjection
 
 ---
 
-## 4. API Layer (`ModernApp.Api`)
+## 4. API Layer (`BootyByBeighley.Api`)
 
 ### 4.1 Endpoint Design
 
@@ -1412,9 +1412,9 @@ public record VideoUrlDto(string VideoUrl);
 ### 4.5 Update Program.cs
 
 ```csharp
-using ModernApp.Api.Features;
-using ModernApp.Application;
-using ModernApp.Infrastructure;
+using BootyByBeighley.Api.Features;
+using BootyByBeighley.Application;
+using BootyByBeighley.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -1448,7 +1448,7 @@ app.MapSharedEndpoints();
 app.Run();
 ```
 
-Create extension methods in `ModernApp.Api/Features/` folder for each feature group.
+Create extension methods in `BootyByBeighley.Api/Features/` folder for each feature group.
 
 ---
 
@@ -1456,7 +1456,7 @@ Create extension methods in `ModernApp.Api/Features/` folder for each feature gr
 
 ### 5.1 Unit Tests (Application Layer)
 
-Create tests in `ModernApp.Application.Tests/` for:
+Create tests in `BootyByBeighley.Application.Tests/` for:
 - CQRS commands and queries
 - Domain entity validations
 - Business logic (PR detection, enrollment validation, etc.)
@@ -1487,7 +1487,7 @@ public class RegisterStudentCommandTests
 
 ### 5.2 Integration Tests (Infrastructure + API)
 
-Create tests in a new `ModernApp.Integration.Tests/` project for:
+Create tests in a new `BootyByBeighley.Integration.Tests/` project for:
 - EF Core DbContext and migrations
 - Azure Blob Storage upload/retrieval
 - Full API endpoint flows
@@ -1527,18 +1527,18 @@ After implementation, update `docs/FEATURES.md` with:
 
 ```bash
 # Create initial migration
-cd backend/src/ModernApp.Infrastructure
-dotnet ef migrations add InitialCreate --startup-project ../ModernApp.Api
+cd backend/src/BootyByBeighley.Infrastructure
+dotnet ef migrations add InitialCreate --startup-project ../BootyByBeighley.Api
 
 # Apply to dev database
-dotnet ef database update --startup-project ../ModernApp.Api
+dotnet ef database update --startup-project ../BootyByBeighley.Api
 ```
 
 ### 7.2 Local Development
 
 1. Set `appsettings.Development.json` connection strings and Azure credentials
 2. Run migrations
-3. Start API: `dotnet run` from `ModernApp.Api` folder
+3. Start API: `dotnet run` from `BootyByBeighley.Api` folder
 4. Open `https://localhost:5001/openapi/v1.json` to verify OpenAPI spec
 5. Use NSwag to generate frontend client types
 
@@ -1569,6 +1569,6 @@ dotnet ef database update --startup-project ../ModernApp.Api
 
 ---
 
-**Backend Implementer**: Once you receive this spec, begin with the Domain Layer. All entity definitions are provided above. Implement them in `ModernApp.Domain`, then proceed to Infrastructure, Application, and API layers in order.
+**Backend Implementer**: Once you receive this spec, begin with the Domain Layer. All entity definitions are provided above. Implement them in `BootyByBeighley.Domain`, then proceed to Infrastructure, Application, and API layers in order.
 
 **Questions or clarifications?** Refer to [Backend Implementer Agent](../.github/agents/backend-implementer.agent.md) and [APP.md](./APP.md) for architectural guidance and product context.

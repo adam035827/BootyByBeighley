@@ -22,7 +22,7 @@ For the full product definition, features, and decisions see `docs/APP.md`.
 The backend requires the following secrets via [.NET user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) — never committed to source control.
 
 ```powershell
-cd backend/src/ModernApp.Api
+cd backend/src/BootyByBeighley.Api
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<postgres-connection-string>"
 dotnet user-secrets set "AzureAdB2C:ClientSecret" "<b2c-client-secret>"
 dotnet user-secrets set "Azure:BlobStorage:ConnectionString" "<blob-storage-connection-string>"
@@ -77,14 +77,14 @@ The generated file is `frontend/app/src/app/core/api/api.ts`. **Do not edit it m
 Booty-by-Beighley/
   backend/
     src/
-      ModernApp.Domain/          # Entities, value objects — no external deps
-      ModernApp.Application/     # CQRS handlers, DTOs, interfaces
-      ModernApp.Infrastructure/  # EF Core DbContext, PostgreSQL repos, Blob Storage
-      ModernApp.Api/             # Minimal API endpoints, middleware, DI wiring
+      BootyByBeighley.Domain/          # Entities, value objects — no external deps
+      BootyByBeighley.Application/     # CQRS handlers, DTOs, interfaces
+      BootyByBeighley.Infrastructure/  # EF Core DbContext, PostgreSQL repos, Blob Storage
+      BootyByBeighley.Api/             # Minimal API endpoints, middleware, DI wiring
     tests/
-      ModernApp.Domain.Tests/
-      ModernApp.Application.Tests/
-      ModernApp.Infrastructure.Tests/
+      BootyByBeighley.Domain.Tests/
+      BootyByBeighley.Application.Tests/
+      BootyByBeighley.Infrastructure.Tests/
   frontend/
     app/src/app/
       core/           # Interceptors, guards, services, auth (Azure AD B2C)
@@ -203,7 +203,7 @@ Infrastructure/
 #### Swapping the database
 
 To replace Cosmos DB with another store (e.g. EF Core + SQL, MongoDB):
-1. Replace the `PackageReference` in `ModernApp.Infrastructure.csproj`
+1. Replace the `PackageReference` in `BootyByBeighley.Infrastructure.csproj`
 2. Rewrite `DependencyInjection.cs` to register the new client and repository
 3. Replace the repository implementation — implement the same `ITodoItemRepository<T>` interface
 4. Delete/replace the document and mapping files
