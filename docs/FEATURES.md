@@ -34,7 +34,7 @@ For the full product definition and planned features see `docs/APP.md`.
 ### PostgreSQL + EF Core infrastructure base
 - **Layer**: backend — Infrastructure
 - **Pattern**: Repository pattern over EF Core with Npgsql
-- **Description**: `AppDbContext` provides the EF Core entry point for all database access. All entity configurations use Fluent API in `Infrastructure/Persistence/Configurations/`. Repository implementations live in `Infrastructure/Repositories/`. Schema is managed via EF Core migrations. The Cosmos DB infrastructure from the original template has been removed.
+- **Description**: `AppDbContext` provides the EF Core entry point for all database access. All entity configurations use Fluent API in `Infrastructure/Persistence/Configurations/`. Repository implementations live in `Infrastructure/Repositories/`. Schema is managed via EF Core migrations. The Cosmos DB infrastructure from the original template is no longer used by any active repository or DI registration; see `docs/INSTRUCTIONS.md` for the remaining unused template files pending removal.
 - **Key files**:
   - `src/BootyByBeighley.Infrastructure/Persistence/AppDbContext.cs`
   - `src/BootyByBeighley.Infrastructure/DependencyInjection.cs`
@@ -144,8 +144,8 @@ A complete worked example of the CRUD pattern, spanning all layers.
 
 ### TodoItem — backend
 - **Layer**: backend (Domain + Application + Infrastructure + API)
-- **Pattern**: CQRS commands/queries, Cosmos DB repository, Minimal API endpoint group
-- **Description**: Full create/read/update/delete implementation for a `TodoItem` entity. Demonstrates the end-to-end pattern: domain entity with factory methods, Application commands and queries each containing their handler, a Cosmos DB repository, and a `MapGroup`-based Minimal API endpoint file.
+- **Pattern**: CQRS commands/queries, EF Core repository, Minimal API endpoint group
+- **Description**: Full create/read/update/delete implementation for a `TodoItem` entity. Demonstrates the end-to-end pattern: domain entity with factory methods, Application commands and queries each containing their handler, an EF Core repository backed by `AppDbContext`, and a `MapGroup`-based Minimal API endpoint file.
 - **Key files**:
   - `src/BootyByBeighley.Domain/TodoItems/TodoItem.cs`
   - `src/BootyByBeighley.Application/Features/TodoItems/ITodoItemRepository.cs`

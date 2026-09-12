@@ -119,7 +119,7 @@ Domain ← Application ← Infrastructure
 
 - **Domain**: pure business logic, no framework dependencies
 - **Application**: commands, queries, handlers, interfaces — depends only on Domain
-- **Infrastructure**: implements Application interfaces, contains all Cosmos DB access
+- **Infrastructure**: implements Application interfaces, contains all EF Core / PostgreSQL data access
 - **API**: Minimal API endpoints — no business logic, only HTTP concerns
 
 ### CQRS
@@ -183,7 +183,7 @@ app.MapPost("/items", async (CreateItemCommand cmd, ICommandHandler<CreateItemCo
 
 ### Persistence abstraction
 
-All data access is hidden behind a repository interface defined in the **Application** layer. The concrete implementation lives in **Infrastructure** and is registered in `DependencyInjection.cs`. No Cosmos SDK types appear in Application or Domain.
+All data access is hidden behind a repository interface defined in the **Application** layer. The concrete implementation lives in **Infrastructure**, backed by the EF Core `AppDbContext`, and is registered in `DependencyInjection.cs`. No EF Core types appear in Application or Domain.
 
 ```
 Application/
@@ -192,24 +192,24 @@ Application/
 
 Infrastructure/
   Persistence/
-    CosmosDocument.cs        ← Cosmos base document (internal)
+    AppDbContext.cs               ← EF Core DbContext (all DbSets)
+    Configurations/                ← Fluent API entity configurations
   Repositories/
-    TodoItemRepository.cs    ← Cosmos implementation
-    TodoItemDocument.cs      ← Cosmos document type (internal)
-    TodoItemMappings.cs      ← domain ↔ document mapping (internal)
-  DependencyInjection.cs     ← THE ONLY file that references CosmosClient
+    TodoItemRepository.cs    ← EF Core implementation, queries AppDbContext
+  DependencyInjection.cs     ← registers AppDbContext (UseNpgsql) and all repositories
 ```
+
+> **Historical note**: `Persistence/CosmosDocument.cs`, `Repositories/TodoItemDocument.cs`, and `Repositories/TodoItemMappings.cs` are unused leftovers from the original Cosmos DB template. Nothing registers or references them — `TodoItemRepository` reads and writes `TodoItem` directly through `AppDbContext`. They are pending removal.
 
 #### Swapping the database
 
-To replace Cosmos DB with another store (e.g. EF Core + SQL, MongoDB):
+To replace PostgreSQL/EF Core with another store (e.g. Cosmos DB, MongoDB):
 1. Replace the `PackageReference` in `BootyByBeighley.Infrastructure.csproj`
-2. Rewrite `DependencyInjection.cs` to register the new client and repository
-3. Replace the repository implementation — implement the same `ITodoItemRepository<T>` interface
-4. Delete/replace the document and mapping files
-5. **Nothing in Domain or Application changes**
+2. Rewrite `DependencyInjection.cs` to register the new client/context and repositories
+3. Replace the repository implementations — implement the same interfaces (e.g. `ITodoItemRepository`)
+4. **Nothing in Domain or Application changes**
 
-The `ITodoItemRepository` interface is the seam. Keep all persistence types (`*Document`, `CosmosDocument`, mapping helpers) `internal` to Infrastructure.
+The repository interfaces (e.g. `ITodoItemRepository`) are the seam between Application and Infrastructure.
 
 ---
 

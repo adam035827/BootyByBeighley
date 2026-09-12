@@ -305,7 +305,7 @@ The student's home screen has three sections, with **Today's Workout as the prim
 ## Technical Alignment
 
 This app is built on the **Booty by Beighley** already in this repo.
-The template's Cosmos DB infrastructure layer is being **replaced with PostgreSQL + EF Core** — the Domain and Application layers are unaffected by this change.
+The template's original Cosmos DB infrastructure layer has been **replaced with PostgreSQL + EF Core** — the Domain and Application layers were unaffected by this change.
 
 ### Database
 - **Azure Database for PostgreSQL — Flexible Server**
@@ -327,6 +327,6 @@ The template's Cosmos DB infrastructure layer is being **replaced with PostgreSQ
 | Angular feature modules | `frontend/app/src/app/features/` |
 
 ### Infrastructure migration note
-The `CosmosDocument` base class, `CosmosClient` DI registration, and Cosmos-specific repository base in `BootyByBeighley.Infrastructure` will be removed and replaced with an EF Core `DbContext` before any feature code is written.
+`DependencyInjection.cs` registers the EF Core `AppDbContext` (via `UseNpgsql`) and no longer registers a `CosmosClient`. A handful of unused template files from the original Cosmos DB implementation (`CosmosDocument`, `TodoItemDocument`, `TodoItemMappings`) remain in `BootyByBeighley.Infrastructure` pending removal — none of them are referenced by the active repositories or DI registration.
 
 The app name `BootyByBeighley` used throughout the codebase is a **placeholder** inherited from the template and will be renamed.
