@@ -1,3 +1,5 @@
+## This file was created before anything was implemented. It is just a document of brainstorming, not a source of truth. 
+
 # Booty by Beighley — App Definition
 
 This document is the **product source of truth** for the Booty by Beighley application.
