@@ -1,0 +1,194 @@
+name: Seeded Stack CI/CD
+
+#   1. PostgreSQL 15 via service container (same creds as docker-compose.yml)
+#   2. .NET SDK 10 backend restore/build + run (EF Migrate + SeedData.SeedAsync
+#      auto-apply in Development, see backend/src/BootyByBeighley.Api/Program.cs)
+#   3. Node 22 + Angular CLI 21 frontend npm ci + build + serve
+#   4. Health-check backend OpenAPI + frontend, verify seeded Postgres rows
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+  ASPNETCORE_ENVIRONMENT: Development
+  API_PORT: "5118"
+  WEB_PORT: "4200"
+  PG_PORT: "5432"
+  PG_DB: booty_by_beighley_dev
+  PG_USER: postgres
+  PG_PASSWORD: Testpass123!
+  # Must match docker-compose.yml postgres service (script exports the same).
+  ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=booty_by_beighley_dev;Username=postgres;Password=Testpass123!
+
+jobs:
+  build-and-run-seeded:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: booty_by_beighley_dev
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Testpass123!
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js 22 (README pins 22 LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/app/package-lock.json
+
+      - name: Show versions (git, dotnet, node, pg client)
+        run: |
+          git --version
+          dotnet --version
+          dotnet --list-sdks
+          node --version
+          npm --version
+          pg_isready --version || { sudo apt-get update -y && sudo apt-get install -y postgresql-client; }
+
+      - name: Wait for PostgreSQL on host port
+        run: |
+          echo "Waiting for postgres at 127.0.0.1:5432 (up to 90s)..."
+          for i in $(seq 1 90); do
+            if pg_isready -h 127.0.0.1 -p 5432 -U postgres >/dev/null 2>&1; then
+              echo "PostgreSQL is ready."
+              break
+            fi
+            if [ "$i" -eq 90 ]; then
+              echo "PostgreSQL never became ready." >&2
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: "Backend restore + build (warnings as errors NU1903, ASPDEPR002)"
+        run: |
+          dotnet restore backend/BootyByBeighley.sln
+          dotnet build backend/BootyByBeighley.sln --no-restore -c Debug -p:WarningsAsErrors="NU1903%3BASPDEPR002"
+
+      - name: Frontend install deps (npm ci, fallback to npm install)
+        working-directory: frontend/app
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci || npm install
+          else
+            npm install
+          fi
+
+      - name: Frontend production build (verifies Angular CLI 21 compile)
+        working-directory: frontend/app
+        run: npx --yes @angular/cli@21 build
+
+      - name: Start backend (background, plain HTTP like --urls in script)
+        run: |
+          mkdir -p .logs
+          nohup dotnet run --project backend/src/BootyByBeighley.Api/BootyByBeighley.Api.csproj \
+            --no-build -c Debug --urls "http://localhost:${API_PORT}" \
+            >.logs/backend.log 2>&1 &
+          echo $! > .logs/backend.pid
+          echo "Backend PID: $(cat .logs/backend.pid)"
+
+      - name: Wait for backend OpenAPI spec
+        # Regression test for the WithOpenApi() removal (ASPDEPR002): the spec
+        # must generate with zero .WithOpenApi() calls in Features/*.cs.
+        run: |
+          echo "Waiting for http://localhost:${API_PORT}/openapi/v1.json (up to 150s)..."
+          for i in $(seq 1 150); do
+            if curl -fsS "http://localhost:${API_PORT}/openapi/v1.json" -o /dev/null 2>&1; then
+              echo "Backend is up."
+              exit 0
+            fi
+            if ! kill -0 "$(cat .logs/backend.pid)" 2>/dev/null; then
+              echo "Backend process exited. Last 60 log lines:" >&2
+              tail -n 60 .logs/backend.log || true
+              exit 1
+            fi
+            sleep 1
+          done
+          echo "Backend did not expose /openapi/v1.json in time." >&2
+          tail -n 60 .logs/backend.log || true
+          exit 1
+
+      - name: Verify seeded Postgres data
+        run: |
+          # SeedData.SeedAsync (backend/src/.../Infrastructure/Seeding/SeedData.cs)
+          # inserts 1 coach + 12 students, 3 plans, 8 movements. Fail if empty.
+          export PGPASSWORD="$PG_PASSWORD"
+          echo "--- table row counts ---"
+          psql -h 127.0.0.1 -p 5432 -U "$PG_USER" -d "$PG_DB" -c \
+            "SELECT 'Users' AS tbl, COUNT(*) FROM \"Users\" UNION ALL SELECT 'WorkoutPlans', COUNT(*) FROM \"WorkoutPlans\" UNION ALL SELECT 'Movements', COUNT(*) FROM \"Movements\";"
+          USERS=$(psql -h 127.0.0.1 -p 5432 -U "$PG_USER" -d "$PG_DB" -tAc 'SELECT COUNT(*) FROM "Users";')
+          echo "Users=$USERS"
+          if [ "${USERS:-0}" -lt 13 ]; then
+            echo "Expected >= 13 seeded users (1 coach + 12 students), got $USERS" >&2
+            exit 1
+          fi
+          echo "Seed check passed."
+
+      - name: Start frontend (background, ng serve like script)
+        working-directory: frontend/app
+        run: |
+          mkdir -p ../../.logs
+          nohup npx --yes @angular/cli@21 serve --host 127.0.0.1 --port "$WEB_PORT" \
+            >../../.logs/frontend.log 2>&1 &
+          echo $! > ../../.logs/frontend.pid
+          echo "Frontend PID: $(cat ../../.logs/frontend.pid)"
+
+      - name: Wait for frontend
+        run: |
+          echo "Waiting for http://127.0.0.1:${WEB_PORT}/ (up to 180s)..."
+          for i in $(seq 1 180); do
+            if curl -fsS "http://127.0.0.1:${WEB_PORT}/" -o /dev/null 2>&1; then
+              echo "Frontend is up."
+              exit 0
+            fi
+            if ! kill -0 "$(cat .logs/frontend.pid)" 2>/dev/null; then
+              echo "Frontend process exited. Last 60 log lines:" >&2
+              tail -n 60 .logs/frontend.log || true
+              exit 1
+            fi
+            sleep 1
+          done
+          echo "Frontend did not respond in time." >&2
+          tail -n 60 .logs/frontend.log || true
+          exit 1
+
+      - name: Smoke test (frontend + backend + OpenAPI reachable together)
+        run: |
+          curl -fsS "http://localhost:${API_PORT}/openapi/v1.json" -o /dev/null
+          curl -fsS "http://127.0.0.1:${WEB_PORT}/" -o /dev/null
+          echo "Smoke test OK:"
+          echo "  Frontend: http://localhost:${WEB_PORT}/"
+          echo "  Backend:  http://localhost:${API_PORT}/"
+          echo "  OpenAPI:  http://localhost:${API_PORT}/openapi/v1.json"
+          echo "  Postgres: localhost:${PG_PORT} db=${PG_DB} user=${PG_USER}"
+
+      - name: Upload server logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-logs
+          path: .logs/*.log
+          if-no-files-found: warn
