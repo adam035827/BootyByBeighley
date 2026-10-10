@@ -15,14 +15,12 @@ public static class StudentEndpoints
         // GET /api/v1/my/plans
         group.MapGet("/my/plans", GetMyPlans)
             .WithName("GetMyPlans")
-            .WithOpenApi()
             .RequireAuthorization()
             .Produces<List<StudentPlanDto>>();
 
         // GET /api/v1/students/{studentId}
         group.MapGet("/students/{studentId:guid}", GetStudentDetails)
             .WithName("GetStudentDetails")
-            .WithOpenApi()
             .RequireAuthorization()
             .Produces<StudentDetailsDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
