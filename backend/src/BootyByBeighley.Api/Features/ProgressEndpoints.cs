@@ -14,7 +14,6 @@ public static class ProgressEndpoints
         // GET /api/v1/my/progress
         group.MapGet("/progress", GetMyProgress)
             .WithName("GetMyProgress")
-            .WithOpenApi()
             .Produces<StudentProgressDto>();
     }
 

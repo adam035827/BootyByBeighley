@@ -32,7 +32,6 @@ public static class CoachEndpoints
         // GET /api/v1/coach/students
         group.MapGet("/", GetStudentsRoster)
             .WithName("GetStudentsRoster")
-            .WithOpenApi()
             .Produces<List<StudentRosterItemDto>>();
     }
 
@@ -46,19 +45,16 @@ public static class CoachEndpoints
         // GET /api/v1/coach/plans
         group.MapGet("/plans", GetWorkoutPlans)
             .WithName("GetCoachWorkoutPlans")
-            .WithOpenApi()
             .Produces<List<WorkoutPlanItemDto>>();
 
         // GET /api/v1/coach/movements
         group.MapGet("/movements", GetMovements)
             .WithName("GetMovements")
-            .WithOpenApi()
             .Produces<List<MovementItemDto>>();
 
         // GET /api/v1/coach/activity
         group.MapGet("/activity", GetRecentActivity)
             .WithName("GetRecentActivity")
-            .WithOpenApi()
             .Produces<List<ActivityItemDto>>();
     }
 
@@ -107,21 +103,18 @@ public static class CoachEndpoints
         // POST /api/v1/workout-plans
         group.MapPost("/", CreateWorkoutPlan)
             .WithName("CreateWorkoutPlan")
-            .WithOpenApi()
             .Produces<WorkoutPlanDto>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         // GET /api/v1/workout-plans/{planId}
         group.MapGet("/{planId:guid}", GetWorkoutPlan)
             .WithName("GetWorkoutPlan")
-            .WithOpenApi()
             .Produces<WorkoutPlanDetailDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         // PUT /api/v1/workout-plans/{planId}/publish
         group.MapPut("/{planId:guid}/publish", PublishWorkoutPlan)
             .WithName("PublishWorkoutPlan")
-            .WithOpenApi()
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
     }
@@ -135,14 +128,12 @@ public static class CoachEndpoints
         // POST /api/v1/movements
         group.MapPost("/", CreateMovement)
             .WithName("CreateMovement")
-            .WithOpenApi()
             .Produces<MovementDto>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         // POST /api/v1/movements/{movementId}/video
         group.MapPost("/{movementId:guid}/video", UploadMovementVideo)
             .WithName("UploadMovementVideo")
-            .WithOpenApi()
             .Produces<MovementVideoUploadDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -152,7 +143,6 @@ public static class CoachEndpoints
             .RequireAuthorization()
             .MapGet("/{movementId:guid}/video-url", GetMovementVideoUrl)
             .WithName("GetMovementVideoUrl")
-            .WithOpenApi()
             .Produces<VideoUrlDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
     }
@@ -166,14 +156,12 @@ public static class CoachEndpoints
         // POST /api/v1/plan-enrollments
         group.MapPost("/", EnrollStudentToPlan)
             .WithName("EnrollStudentToPlan")
-            .WithOpenApi()
             .Produces<PlanEnrollmentDto>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         // GET /api/v1/students/{studentId}/plan-enrollments
         group.MapGet("/students/{studentId:guid}", GetStudentPlanEnrollments)
             .WithName("GetStudentPlanEnrollments")
-            .WithOpenApi()
             .Produces<List<StudentPlanDto>>();
     }
 

@@ -14,14 +14,12 @@ public static class AuthEndpoints
         // POST /api/v1/auth/register
         group.MapPost("/register", RegisterStudent)
             .WithName("RegisterStudent")
-            .WithOpenApi()
             .Produces<UserDto>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         // GET /api/v1/auth/me
         group.MapGet("/me", GetCurrentStudent)
             .WithName("GetCurrentStudent")
-            .WithOpenApi()
             .RequireAuthorization()
             .Produces<StudentDetailsDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);

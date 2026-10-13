@@ -53,3 +53,5 @@ playwright-backend.json
 *.tfstate
 *.tfstate.backup
 .terraform/
+.logs/backend.pid
+.logs/frontend.pid
